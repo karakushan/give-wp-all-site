@@ -1,0 +1,1 @@
+E:/wamp/www/give-wp.loc/wp-content/plugins/query-monitor/wp-content/db.php
