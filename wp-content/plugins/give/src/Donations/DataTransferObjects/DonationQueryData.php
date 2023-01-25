@@ -120,20 +120,22 @@ final class DonationQueryData
     /**
      * Convert data from object to Donation
      *
-     * @since 2.23.0 remove parentId property
-     * @since 2.22.0 add support for company field
-     * @since 2.20.0 update for new amount property, fee amount recovered, and exchange rate
-     * @since 2.19.6
-     *
      * @param object $donationQueryObject
      *
      * @return self
+     * @since 2.20.0 update for new amount property, fee amount recovered, and exchange rate
+     * @since 2.19.6
+     *
+     * @since 2.23.0 remove parentId property
+     * @since 2.22.0 add support for company field
      */
     public static function fromObject($donationQueryObject): self
     {
         $self = new static();
 
+
         $currency = $donationQueryObject->{DonationMetaKeys::CURRENCY()->getKeyAsCamelCase()};
+
         $feeAmountRecovered = $donationQueryObject->{DonationMetaKeys::FEE_AMOUNT_RECOVERED()->getKeyAsCamelCase()};
 
         $self->id = (int)$donationQueryObject->id;
