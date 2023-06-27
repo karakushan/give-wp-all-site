@@ -1,0 +1,36 @@
+.label {
+  padding: 4px 12px 0 12px;
+  border-radius: 6px;
+  display: inline-block;
+  height: 26px;
+  background-color: #a7a7a7;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.error {
+  background-color: #d75a4b;
+}
+
+.warning {
+  background-color: #f49420;
+}
+
+.success {
+  background-color: #7cc17b;
+}
+
+.info {
+  background-color: #0878b0;
+}
+
+.notice {
+  background-color: #0878b0;
+}
+
+.http {
+  background-color: #a7a7a7;
+}
+
+/*# sourceMappingURL=styles.module.css.map */

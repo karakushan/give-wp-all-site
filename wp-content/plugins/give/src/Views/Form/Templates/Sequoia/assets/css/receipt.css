@@ -1,0 +1,256 @@
+/* stylelint-disable */
+/* stylelint-disable */
+/* stylelint-enable */
+.give-flex {
+  display: flex !important;
+}
+
+.give-grid {
+  display: grid !important;
+}
+
+/* stylelint-enable */
+.receipt .checkmark, .receipt .error_icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 50px auto 0 auto;
+  height: 60px;
+  width: 60px;
+  border-radius: 50%;
+  border: 7px solid #24b347;
+  color: #24b347;
+  font-size: 42px;
+}
+@media screen and (max-width: 500px) {
+  .receipt .checkmark, .receipt .error_icon {
+    margin: 38px auto 0 auto;
+  }
+}
+.receipt .error_icon {
+  border: 7px solid #c91f1f;
+  color: #c91f1f;
+}
+.receipt .headline {
+  margin-top: 30px;
+  margin-bottom: 10px;
+  margin-left: 10px;
+  margin-right: 10px;
+  text-align: center;
+}
+.receipt .message {
+  margin-top: 10px;
+  max-width: 80%;
+  text-align: center;
+}
+@media screen and (max-width: 500px) {
+  .receipt .message {
+    margin-top: 5px;
+  }
+}
+.receipt .social-sharing {
+  display: flex;
+  flex-direction: column;
+  background: #fbfbfb;
+  border-top: 1px solid #f2f2f2;
+  border-bottom: 1px solid #f2f2f2;
+  padding: 24px 20px 26px 20px;
+  margin-left: 0;
+  margin-right: 0;
+  margin-top: 28px;
+}
+@media screen and (max-width: 500px) {
+  .receipt .social-sharing {
+    padding: 12px 20px 14px 20px;
+    margin-top: 6px;
+  }
+}
+.receipt .social-sharing .instruction {
+  margin: 0 0 14px 0;
+  line-height: 1.5;
+  grid-column: span 2;
+  font-size: 13px;
+  color: #767676;
+  text-align: center;
+}
+@media screen and (max-width: 500px) {
+  .receipt .social-sharing .instruction {
+    margin: 0 24px 0 24px;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+}
+.receipt .social-sharing .btn-row {
+  margin-top: 9px;
+  display: flex;
+  align-items: center;
+  margin-right: auto;
+  margin-left: auto;
+}
+@media screen and (max-width: 500px) {
+  .receipt .social-sharing .btn-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+.receipt .social-sharing .social-btn {
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  padding: 14px 27px;
+  margin: 0 14px;
+  border: none !important;
+}
+@media screen and (max-width: 500px) {
+  .receipt .social-sharing .social-btn {
+    margin: 6px 0;
+  }
+}
+.receipt .social-sharing .social-btn > i {
+  margin-left: 12px;
+  font-size: 22px;
+}
+.receipt .social-sharing .social-btn.facebook-btn {
+  background-color: #3b5998 !important;
+  transition: background-color 0.2s ease;
+}
+.receipt .social-sharing .social-btn.facebook-btn:hover {
+  background-color: #4668b1 !important;
+}
+.receipt .social-sharing .social-btn.twitter-btn {
+  background-color: #00acee !important;
+  transition: background-color 0.2s ease;
+}
+.receipt .social-sharing .social-btn.twitter-btn:hover {
+  background-color: #00b7ff !important;
+}
+.receipt .social-sharing .social-btn:first-of-type {
+  margin-left: 0;
+}
+.receipt .social-sharing .social-btn:last-of-type {
+  margin-right: 0;
+}
+.receipt .details {
+  margin: 0 24px;
+}
+.receipt .details .headline {
+  margin-top: 24px !important;
+  margin-bottom: 18px !important;
+  font-size: 16px;
+  line-height: 20px;
+  text-align: center;
+  color: #555;
+  font-weight: 400;
+}
+@media screen and (max-width: 500px) {
+  .receipt .details .headline {
+    margin-top: 16px !important;
+    margin-bottom: 6px !important;
+  }
+}
+.receipt .details .details-table {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #f2f2f2;
+  border-radius: 6px;
+  padding: 8px 16px;
+  margin: 10px 0 24px 0;
+}
+.receipt .details .details-table .details-row {
+  display: flex;
+  align-items: flex-start;
+  font-size: 14px;
+  line-height: 17px;
+  margin: 10px 0;
+  font-weight: 300;
+  flex-wrap: wrap;
+}
+@media screen and (max-width: 500px) {
+  .receipt .details .details-table .details-row {
+    justify-content: center;
+    align-items: center;
+  }
+}
+.receipt .details .details-table .details-row > i {
+  color: #989898;
+  padding-right: 10px;
+}
+.receipt .details .details-table .details-row .detail {
+  text-transform: uppercase;
+  color: #6b6b6b;
+  white-space: nowrap;
+}
+@media screen and (max-width: 500px) {
+  .receipt .details .details-table .details-row .detail {
+    padding: 5px 0;
+  }
+}
+.receipt .details .details-table .details-row .value {
+  flex: 1;
+  text-align: right;
+  color: #555;
+  white-space: pre-wrap;
+}
+@media screen and (max-width: 500px) {
+  .receipt .details .details-table .details-row .value {
+    flex: 0;
+    padding: 5px 10px;
+  }
+}
+.receipt .details .details-table .details-row.total {
+  background: #fbfbfb;
+  font-weight: 600;
+  padding: 8px 16px 10px 16px;
+  margin: 0 -16px -8px -16px;
+  border-top: 1px solid #f2f2f2;
+}
+.receipt .details .details-table .details-row.total .value {
+  color: #333;
+}
+.receipt .details .details-table.payment-details {
+  border-bottom: 2px solid #f2f2f2;
+}
+.receipt .details .details-table:empty {
+  display: none !important;
+}
+.receipt .details.additionalinformation-section .details-row .value {
+  white-space: normal;
+}
+.receipt .details.additionalinformation-section .details-row .value p {
+  margin: 0;
+}
+.receipt .details.additionalinformation-section .details-row .value p + p {
+  margin-top: 10px;
+}
+.receipt #give-pdf-receipt-link,
+.receipt #give-pdf-receipt-link:visited {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: #fff;
+}
+.receipt #give-pdf-receipt-link::after,
+.receipt #give-pdf-receipt-link:visited::after {
+  display: inline-block;
+  content: "\f1c1";
+  font-family: "Font Awesome 5 Free", serif;
+  font-weight: 900;
+  font-size: 20px;
+  margin-left: 15px;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  font-style: normal;
+  font-variant: normal;
+  text-rendering: auto;
+  line-height: 1;
+}
+
+/*---------------------------------
+RTL styles
+-----------------------------------*/
+html[dir=rtl] .details-row > i {
+  padding-right: 0 !important;
+  padding-left: 10px;
+}
+
+/*# sourceMappingURL=receipt.css.map */

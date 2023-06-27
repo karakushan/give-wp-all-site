@@ -1,0 +1,12 @@
+.wp-block-give-donation-form {
+  position: relative;
+}
+.wp-block-give-donation-form form[id*=give-form] #give-gateway-radio-list > li input[type=radio] {
+  display: inline-block;
+}
+
+.give-change-donation-form-btn svg {
+  margin-top: 3px;
+}
+
+/*# sourceMappingURL=block.css.map */

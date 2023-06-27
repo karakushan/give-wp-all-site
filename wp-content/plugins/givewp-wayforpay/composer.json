@@ -1,0 +1,17 @@
+{
+    "name": "vitaliy/give-wayforpay-gateway",
+    "autoload": {
+        "psr-4": {
+            "GiveWFPGateway\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Vitaliy Karakushan",
+            "email": "karakushan@gmail.com"
+        }
+    ],
+    "require": {
+        "wayforpay/php-sdk": "^1.0"
+    }
+}

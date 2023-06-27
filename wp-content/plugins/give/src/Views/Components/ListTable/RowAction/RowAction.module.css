@@ -1,0 +1,18 @@
+.action {
+  font-weight: 600;
+}
+.action:is(button) {
+  appearance: none;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+.action:focus, .action:hover, .action:active {
+  text-decoration: underline;
+}
+.action.delete {
+  color: #e84b3b;
+}
+
+/*# sourceMappingURL=RowAction.module.css.map */

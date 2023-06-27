@@ -1,0 +1,10 @@
+[data-type="give/multi-form-goal"] [data-type="give/progress-bar"] {
+  margin: 0 !important;
+  max-width: 100% !important;
+}
+[data-type="give/multi-form-goal"] [data-type="core/media-text"] {
+  margin: 24px !important;
+  max-width: 100% !important;
+}
+
+/*# sourceMappingURL=editor.css.map */

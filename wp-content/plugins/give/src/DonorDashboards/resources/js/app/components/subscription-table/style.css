@@ -1,0 +1,10 @@
+/* stylelint-disable selector-class-pattern */
+.give-donor-dashboard-table__footer-nav a {
+  border: none;
+  color: #9fa2b4;
+}
+.give-donor-dashboard-table__footer-nav svg {
+  margin: 8px;
+}
+
+/*# sourceMappingURL=style.css.map */

@@ -1,0 +1,52 @@
+.give-form-grid-inspector {
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+}
+.give-form-grid-inspector__filter {
+  margin-top: -18px !important;
+}
+.give-form-grid-inspector__help {
+  font-size: 0.75rem;
+  color: #757575;
+  font-style: normal;
+  margin: -15px 0 15px 0 !important;
+}
+.give-form-grid-inspector .components-base-control__label {
+  margin: 0 !important;
+}
+.give-form-grid-inspector .components-base-control__field {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+}
+.give-form-grid-inspector .components-base-control__field .components-text-control__input {
+  flex: 0.7 !important;
+}
+.give-form-grid-inspector .components-flex-item {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+.give-form-grid-inspector .components-flex-item .components-input-control__label {
+  flex: 1 !important;
+  margin: 0 !important;
+}
+.give-form-grid-inspector .components-input-control__container {
+  max-width: 135px !important;
+}
+.give-form-grid-inspector .components-input-control__container > select {
+  line-height: 1.2 !important;
+}
+
+.components-form-token-field label {
+  display: none !important;
+}
+
+.exclude__form {
+  margin-top: 20px !important;
+  border: 1px solid transparent;
+}
+
+/*# sourceMappingURL=style.css.map */

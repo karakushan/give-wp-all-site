@@ -1,0 +1,22 @@
+.sortButton {
+  display: flex;
+  align-items: center;
+  background: none;
+  color: #2271b1;
+  border: none;
+  cursor: pointer;
+  transform: translateX(-10px);
+}
+.sortButton .text {
+  white-space: nowrap;
+}
+.sortButton svg {
+  display: block;
+  transform: scale(112%);
+  margin: 3px 0 3px 8px;
+}
+.sortButton svg > path:hover {
+  fill: #0878b0 !important;
+}
+
+/*# sourceMappingURL=style.module.css.map */

@@ -1,0 +1,18 @@
+/* stylelint-disable selector-class-pattern */
+.give-donor-dashboard__recurring-donations-link {
+  display: inline-flex;
+  justify-content: flex-end;
+}
+.give-donor-dashboard__recurring-donations-link a {
+  color: #3398db;
+  font-size: 14px;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  border: none;
+}
+.give-donor-dashboard__recurring-donations-link a svg {
+  margin-right: 6px;
+}
+
+/*# sourceMappingURL=style.css.map */

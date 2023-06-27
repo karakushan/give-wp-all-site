@@ -1,0 +1,14 @@
+.gutenberg__editor .give-blank-slate__image {
+  max-width: 96px;
+}
+
+.give-chosen-base-control a.chosen-single {
+  box-shadow: none !important;
+}
+.give-chosen-base-control ul.chosen-results {
+  margin: 0 !important;
+  text-align: left !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+}
+
+/*# sourceMappingURL=style.css.map */

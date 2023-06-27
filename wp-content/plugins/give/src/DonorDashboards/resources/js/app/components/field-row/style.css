@@ -1,0 +1,27 @@
+/* stylelint-disable selector-class-pattern */
+.give-donor-dashboard-field-row {
+  display: flex;
+  align-items: center;
+  margin: 0;
+}
+.give-donor-dashboard-field-row > * {
+  margin: 0 10px;
+  flex: 1;
+}
+.give-donor-dashboard-field-row > *:first-child {
+  margin-left: 0;
+}
+.give-donor-dashboard-field-row > *:last-child {
+  margin-right: 0;
+}
+@media screen and (max-width: 920px) {
+  .give-donor-dashboard-field-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .give-donor-dashboard-field-row > * {
+    margin: 0;
+  }
+}
+
+/*# sourceMappingURL=style.css.map */

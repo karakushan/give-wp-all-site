@@ -1,0 +1,82 @@
+.container {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin-block-start: 0.125rem;
+  margin-block-end: 0.125rem;
+  min-height: 1.875rem;
+}
+.container > * {
+  margin-inline-start: 0.125rem;
+  margin-inline-end: 0.125rem;
+}
+
+#currentPage {
+  font-size: 0.8125rem;
+  border-radius: 0;
+  border-color: #dddddd;
+}
+#currentPage::-webkit-outer-spin-button, #currentPage::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+#currentPage[type=number] {
+  -moz-appearance: textfield;
+  min-width: 0;
+  width: 1.75rem;
+  padding: 0.0125rem;
+}
+
+.navDirection {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  text-decoration: none;
+  color: #2271b1;
+  border-color: #2271b1;
+  background: #e5e5e5;
+  font-size: 1.5rem;
+  font-weight: 400;
+  transition-property: border, background, color;
+  transition-duration: 0.05s;
+  transition-timing-function: ease-in-out;
+}
+
+button[aria-disabled=false].navDirection {
+  cursor: pointer;
+}
+button[aria-disabled=false].navDirection:hover {
+  background: #f0f0f1;
+  border-color: #0a4b78;
+  color: #0a4b78;
+}
+
+button[aria-disabled=true].navDirection {
+  color: #a7aaad;
+  border-color: #dcdcde;
+  background: #f6f7f7;
+}
+
+.navElement {
+  border-width: 1px;
+  border-style: solid;
+  vertical-align: baseline;
+  inline-size: 1.875rem;
+  block-size: 1.875rem;
+  padding: 0 0.25rem;
+  text-align: center;
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/*# sourceMappingURL=Pagination.module.css.map */

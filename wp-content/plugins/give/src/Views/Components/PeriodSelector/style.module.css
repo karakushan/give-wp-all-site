@@ -1,0 +1,78 @@
+/* stylelint-disable */
+.periodSelector {
+  display: inline-flex;
+  align-items: center;
+  min-width: 330px;
+}
+
+.datepicker {
+  border: 1px solid #ddd;
+  border-bottom-width: 3px;
+  background: #fff;
+  height: 32px;
+  border-radius: 3px;
+  padding-left: 22px;
+  /* stylelint-enable */
+}
+.datepicker :global .CalendarDay__selected_span {
+  background: #91c896;
+  color: #fff;
+  border: 1px solid #66bb6a;
+}
+.datepicker :global .CalendarDay__selected {
+  background: #66bb6a;
+  color: #fff;
+  border: 1px double #47814a;
+}
+.datepicker :global .CalendarDay__hovered_span,
+.datepicker :global .CalendarDay__hovered_span:hover {
+  background: #91c896;
+  color: #fff;
+  border: 1px solid #66bb6a;
+}
+.datepicker :global .DayPickerNavigation_button__horizontalDefault {
+  top: 12px;
+}
+.datepicker :global .DateRangePickerInput {
+  border: none;
+  background: none;
+  height: 26px;
+}
+.datepicker :global .DateRangePicker_picker {
+  border-radius: 3px;
+  top: 48px !important;
+}
+.datepicker :global .DateInput_fang {
+  top: 38px !important;
+}
+.datepicker :global .DateInput {
+  background: none;
+}
+.datepicker :global .DayPicker_weekHeader {
+  top: 52px;
+}
+.datepicker input[type=text] {
+  height: 34px;
+  min-height: 34px;
+  border: none;
+  background: none;
+  border-radius: 3px;
+  overflow: hidden;
+  font-size: 14px;
+}
+.datepicker input[type=text]:focus {
+  box-shadow: none;
+  border: none;
+}
+
+.icon {
+  height: 32px;
+  width: 32px;
+  position: absolute;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/*# sourceMappingURL=style.module.css.map */

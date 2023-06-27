@@ -1,0 +1,16 @@
+.give-donor-dashboard-tab-link {
+  display: flex;
+  align-items: center;
+  color: #424242 !important;
+  line-height: 2.2;
+}
+@media screen and (max-width: 920px) {
+  .give-donor-dashboard-tab-link {
+    line-height: 1.4;
+  }
+}
+.give-donor-dashboard-tab-link svg {
+  margin-right: 8px;
+}
+
+/*# sourceMappingURL=style.css.map */
