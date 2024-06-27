@@ -2,7 +2,7 @@
 /**
  * @license GPL-2.0-or-later
  *
- * Modified by impress-org on 20-January-2023 using Strauss.
+ * Modified by impress-org on 26-June-2024 using Strauss.
  * @see https://github.com/BrianHenryIE/strauss
  */
 
@@ -19,7 +19,7 @@ class Currency implements ValidationRule, ValidatesOnFrontEnd
     /**
      * @inheritDoc
      *
-     * @unreleased
+     * @since 1.0.0
      */
     public static function id(): string
     {
@@ -29,7 +29,7 @@ class Currency implements ValidationRule, ValidatesOnFrontEnd
     /**
      * @inheritDoc
      *
-     * @unreleased
+     * @since 1.0.0
      */
     public static function fromString(string $options = null): ValidationRule
     {
@@ -39,7 +39,7 @@ class Currency implements ValidationRule, ValidatesOnFrontEnd
     /**
      * @inheritDoc
      *
-     * @unreleased
+     * @since 1.0.0
      */
     public function serializeOption()
     {
@@ -49,7 +49,7 @@ class Currency implements ValidationRule, ValidatesOnFrontEnd
     /**
      * @inheritDoc
      *
-     * @unreleased
+     * @since 1.0.0
      */
     public function __invoke($value, Closure $fail, string $key, array $values)
     {
@@ -59,7 +59,7 @@ class Currency implements ValidationRule, ValidatesOnFrontEnd
     }
 
     /**
-     * @unreleased
+     * @since 1.0.0
      *
      * @return string[]
      */

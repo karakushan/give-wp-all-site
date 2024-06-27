@@ -5,6 +5,8 @@ namespace Give\ServiceProviders;
 use Give\Controller\PayPalWebhooks;
 use Give\Framework\Migrations\MigrationsRegister;
 use Give\Helpers\Hooks;
+use Give\PaymentGateways\Gateways\PayPalStandard\Migrations\RemovePayPalIPNVerificationSetting;
+use Give\PaymentGateways\Gateways\PayPalStandard\Migrations\SetPayPalStandardGatewayId;
 use Give\PaymentGateways\PayPalCommerce\AccountAdminNotices;
 use Give\PaymentGateways\PayPalCommerce\AdvancedCardFields;
 use Give\PaymentGateways\PayPalCommerce\AjaxRequestHandler;
@@ -17,13 +19,12 @@ use Give\PaymentGateways\PayPalCommerce\RefreshToken;
 use Give\PaymentGateways\PayPalCommerce\RefundPaymentHandler;
 use Give\PaymentGateways\PayPalCommerce\Repositories\MerchantDetails;
 use Give\PaymentGateways\PayPalCommerce\Repositories\PayPalAuth;
+use Give\PaymentGateways\PayPalCommerce\Repositories\Settings;
 use Give\PaymentGateways\PayPalCommerce\Repositories\Webhooks;
 use Give\PaymentGateways\PayPalCommerce\ScriptLoader;
 use Give\PaymentGateways\PayPalCommerce\Webhooks\WebhookChecker;
 use Give\PaymentGateways\PayPalCommerce\Webhooks\WebhookRegister;
 use Give\PaymentGateways\PaypalSettingPage;
-use Give\PaymentGateways\Gateways\PayPalStandard\Migrations\RemovePayPalIPNVerificationSetting;
-use Give\PaymentGateways\Gateways\PayPalStandard\Migrations\SetPayPalStandardGatewayId;
 use Give\PaymentGateways\Stripe\Admin\AccountManagerSettingField;
 use Give\PaymentGateways\Stripe\Admin\CreditCardSettingField;
 use Give\PaymentGateways\Stripe\ApplicationFee;
@@ -108,7 +109,9 @@ class PaymentGateways implements ServiceProvider
      */
     public function handleSellerOnBoardingRedirect()
     {
-        give(onBoardingRedirectHandler::class)->boot();
+        if( current_user_can('manage_give_settings') ) {
+            give(onBoardingRedirectHandler::class)->boot();
+        }
     }
 
     /**
@@ -137,8 +140,10 @@ class PaymentGateways implements ServiceProvider
         give()->singleton(ScriptLoader::class);
         give()->singleton(WebhookRegister::class);
         give()->singleton(Webhooks::class);
+        give()->singleton(PayPalClient::class);
         give()->singleton(MerchantDetails::class);
         give()->singleton(PayPalAuth::class);
+        give()->singleton(Settings::class);
 
         give()->singleton(
             MerchantDetail::class,
@@ -161,6 +166,20 @@ class PaymentGateways implements ServiceProvider
             Webhooks::class,
             static function (Webhooks $repository) {
                 $repository->setMode(give_is_test_mode() ? 'sandbox' : 'live');
+            }
+        );
+
+        give()->resolving(
+            Settings::class,
+            static function (Settings $repository) {
+                $repository->setMode(give_is_test_mode() ? 'sandbox' : 'live');
+            }
+        );
+
+        give()->resolving(
+            PayPalClient::class,
+            static function (PayPalClient $object) {
+                $object->setMode(give_is_test_mode() ? 'sandbox' : 'live');
             }
         );
     }
@@ -224,11 +243,20 @@ class PaymentGateways implements ServiceProvider
             'approveOrder'
         );
 
+        Hooks::addAction('wp_ajax_give_paypal_commerce_update_order_amount', AjaxRequestHandler::class,
+            'updateOrderAmount');
+        Hooks::addAction(
+            'wp_ajax_nopriv_give_paypal_commerce_update_order_amount',
+            AjaxRequestHandler::class,
+            'updateOrderAmount'
+        );
+
         Hooks::addAction('admin_enqueue_scripts', ScriptLoader::class, 'loadAdminScripts');
         Hooks::addAction('wp_enqueue_scripts', ScriptLoader::class, 'loadPublicAssets');
         Hooks::addAction('give_pre_form_output', DonationFormPaymentMethod::class, 'handle');
 
-        Hooks::addAction('give_paypal_commerce_refresh_token', RefreshToken::class, 'refreshToken');
+        Hooks::addAction('give_paypal_commerce_refresh_sandbox_token', RefreshToken::class, 'cronJobRefreshToken');
+        Hooks::addAction('give_paypal_commerce_refresh_live_token', RefreshToken::class, 'cronJobRefreshToken');
 
         Hooks::addAction('admin_init', AccountAdminNotices::class, 'displayNotices');
         Hooks::addFilter(

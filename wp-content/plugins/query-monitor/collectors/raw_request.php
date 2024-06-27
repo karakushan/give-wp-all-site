@@ -51,12 +51,12 @@ class QM_Collector_Raw_Request extends QM_DataCollector {
 	 */
 	public function process() {
 		$request = array(
-			'ip' => $_SERVER['REMOTE_ADDR'],
+			'ip' => $_SERVER['REMOTE_ADDR'] ?? '',
 			'method' => strtoupper( wp_unslash( $_SERVER['REQUEST_METHOD'] ) ),
 			'scheme' => is_ssl() ? 'https' : 'http',
 			'host' => wp_unslash( $_SERVER['HTTP_HOST'] ),
-			'path' => isset( $_SERVER['REQUEST_URI'] ) ? wp_unslash( $_SERVER['REQUEST_URI'] ) : '/',
-			'query' => isset( $_SERVER['QUERY_STRING'] ) ? wp_unslash( $_SERVER['QUERY_STRING'] ) : '',
+			'path' => wp_unslash( $_SERVER['REQUEST_URI'] ?? '/' ),
+			'query' => wp_unslash( $_SERVER['QUERY_STRING'] ?? '' ),
 			'headers' => $this->get_headers( wp_unslash( $_SERVER ) ),
 		);
 

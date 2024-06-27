@@ -10,11 +10,11 @@ if( !defined('ABSPATH') ) {
  * @author        Alex Kovalev <alex.kovalevv@gmail.com>, Github: https://github.com/alexkovalevv
  * @copyright (c) 19.02.2018, Webcraftic
  */
-class WGA_Plugin extends Wbcr_Factory460_Plugin {
+class WGA_Plugin extends Wbcr_Factory474_Plugin {
 
 	/**
 	 * @see self::app()
-	 * @var Wbcr_Factory460_Plugin
+	 * @var Wbcr_Factory474_Plugin
 	 */
 	private static $app;
 
@@ -59,7 +59,7 @@ class WGA_Plugin extends Wbcr_Factory460_Plugin {
 	 * Используется для получения настроек плагина, информации о плагине, для доступа к вспомогательным
 	 * классам.
 	 *
-	 * @return \Wbcr_Factory460_Plugin|\WGA_Plugin
+	 * @return \Wbcr_Factory474_Plugin|\WGA_Plugin
 	 */
 	public static function app()
 	{

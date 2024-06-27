@@ -4,11 +4,11 @@
  * Plugin URI: https://webcraftic.com
  * Description: Webcraftic Clearfy Cache
  * Author: Webcraftic <wordpress.webraftic@gmail.com>
- * Version: 1.0.1
+ * Version: 1.0.2
  * Text Domain: clearfy_cache
  * Domain Path: /languages/
  * Author URI: https://webcraftic.com
- * Framework Version: FACTORY_460_VERSION
+ * Framework Version: FACTORY_474_VERSION
  */
 
 // Exit if accessed directly

@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class WCL_ConfigGooglePerformance extends WBCR\Factory_Templates_109\Configurate {
+class WCL_ConfigGooglePerformance extends WBCR\Factory_Templates_127\Configurate {
 
 	/**
 	 * @param WCL_Plugin $plugin

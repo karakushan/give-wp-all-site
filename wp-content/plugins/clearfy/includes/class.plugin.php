@@ -12,11 +12,11 @@ if( !defined('ABSPATH') ) {
 	exit;
 }
 
-class WCL_Plugin extends Wbcr_Factory460_Plugin {
+class WCL_Plugin extends Wbcr_Factory474_Plugin {
 
 	/**
 	 * @see self::app()
-	 * @var Wbcr_Factory460_Plugin
+	 * @var Wbcr_Factory474_Plugin
 	 */
 	private static $app;
 
@@ -75,7 +75,7 @@ class WCL_Plugin extends Wbcr_Factory460_Plugin {
 	 * Используется для получения настроек плагина, информации о плагине, для доступа к вспомогательным
 	 * классам.
 	 *
-	 * @return \Wbcr_Factory460_Plugin|\WCL_Plugin
+	 * @return \Wbcr_Factory474_Plugin|\WCL_Plugin
 	 */
 	public static function app()
 	{
@@ -359,7 +359,7 @@ class WCL_Plugin extends Wbcr_Factory460_Plugin {
 	 * @param $slug
 	 * param $premium
 	 *
-	 * @return \WBCR\Factory_460\Components\Install_Button
+	 * @return \WBCR\Factory_474\Components\Install_Button
 	 */
 	public function getInstallComponentsButton($component_type, $slug)
 	{
@@ -372,7 +372,7 @@ class WCL_Plugin extends Wbcr_Factory460_Plugin {
 	 * @param $component_type
 	 * @param $slug
 	 *
-	 * @return \WBCR\Factory_460\Components\Delete_Button
+	 * @return \WBCR\Factory_474\Components\Delete_Button
 	 */
 	public function getDeleteComponentsButton($component_type, $slug)
 	{

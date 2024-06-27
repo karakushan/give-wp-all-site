@@ -24,6 +24,7 @@ use Give\Subscriptions\Models\Subscription;
 /**
  * Class Donation
  *
+ * @since 3.9.0 Add phone property
  * @since 2.23.0 add type property; remove parentId property
  * @since 2.20.0 update amount type, fee recovered, and exchange rate
  * @since 2.19.6
@@ -41,9 +42,11 @@ use Give\Subscriptions\Models\Subscription;
  * @property string $exchangeRate
  * @property string $gatewayId
  * @property int $donorId
+ * @property string $honorific
  * @property string $firstName
  * @property string $lastName
  * @property string $email
+ * @property string $phone
  * @property int $subscriptionId
  * @property BillingAddress $billingAddress
  * @property string $purchaseKey
@@ -55,6 +58,7 @@ use Give\Subscriptions\Models\Subscription;
  * @property Subscription $subscription
  * @property DonationNote[] $notes
  * @property string $company
+ * @property string $comment
  */
 class Donation extends Model implements ModelCrud, ModelHasFactory
 {
@@ -77,15 +81,18 @@ class Donation extends Model implements ModelCrud, ModelHasFactory
         'exchangeRate' => ['string', '1'],
         'gatewayId' => 'string',
         'donorId' => 'int',
+        'honorific' => 'string',
         'firstName' => 'string',
         'lastName' => 'string',
         'email' => 'string',
+        'phone' => 'string',
         'subscriptionId' => ['int', 0],
         'billingAddress' => BillingAddress::class,
         'anonymous' => ['bool', false],
         'levelId' => ['string', ''],
         'gatewayTransactionId' => 'string',
         'company' => 'string',
+        'comment' => 'string',
     ];
 
     /**

@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 if ( ! defined( 'WCTR_PLUGIN_ACTIVE' ) ) {
-	define( 'WCTR_PLUGIN_VERSION', '1.1.6' );
+	define( 'WCTR_PLUGIN_VERSION', '1.1.8' );
 	define( 'WCTR_TEXT_DOMAIN', 'cyrlitera' );
 	define( 'WCTR_PLUGIN_ACTIVE', true );
 
@@ -31,7 +31,7 @@ if ( ! defined( 'WCTR_PLUGIN_ACTIVE' ) ) {
 	}
 
 	if ( ! defined( 'WCTR_PLUGIN_URL' ) ) {
-		define( 'WCTR_PLUGIN_URL', plugins_url( null, __FILE__ ) );
+		define( 'WCTR_PLUGIN_URL', plugins_url( '', __FILE__ ) );
 	}
 
 	try {

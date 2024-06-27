@@ -2,6 +2,7 @@
 
 namespace Give\MultiFormGoals\ProgressBar;
 
+use Give\DonationForms\DonationQuery;
 use Give\ValueObjects\Money;
 
 class Model
@@ -38,6 +39,7 @@ class Model
     /**
      * Get forms associated with Progress Bar
      *
+     * @since 3.0.3 Return empty array instead of false
      * @since 2.9.0
      */
     public function getForms(): array
@@ -78,7 +80,7 @@ class Model
 
             return $query->posts;
         } else {
-            return false;
+            return [];
         }
     }
 
@@ -131,14 +133,12 @@ class Model
     /**
      * Get raw earnings value for Progress Bar
      *
+     * @since 3.12.0 use DonationQuery
      * @since 2.9.0
      */
     public function getTotal(): string
     {
-        $query = new Query($this->getForms());
-        $results = $query->getResults();
-
-        return Money::ofMinor($results->total, give_get_option('currency'))->getAmount();
+        return (new DonationQuery())->forms($this->getForms())->sumIntendedAmount();
     }
 
     /**

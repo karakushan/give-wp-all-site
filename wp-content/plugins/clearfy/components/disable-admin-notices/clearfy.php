@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 if ( ! defined( 'WDN_PLUGIN_ACTIVE' ) ) {
-	define( 'WDN_PLUGIN_VERSION', '1.2.3' );
+	define( 'WDN_PLUGIN_VERSION', '1.3.4' );
 	define( 'WDN_TEXT_DOMAIN', 'disable-admin-notices' );
 	define( 'WDN_PLUGIN_ACTIVE', true );
 
@@ -34,7 +34,7 @@ if ( ! defined( 'WDN_PLUGIN_ACTIVE' ) ) {
 	}
 
 	if ( ! defined( 'WDN_PLUGIN_URL' ) ) {
-		define( 'WDN_PLUGIN_URL', plugins_url( null, __FILE__ ) );
+		define( 'WDN_PLUGIN_URL', plugins_url( '', __FILE__ ) );
 	}
 
 	try {

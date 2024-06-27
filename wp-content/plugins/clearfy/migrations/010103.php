@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class WCLUpdate010103 extends Wbcr_Factory460_Update {
+class WCLUpdate010103 extends Wbcr_Factory474_Update {
 
 	public function install() {
 		global $wpdb;

@@ -8,7 +8,7 @@
 
 namespace Give\Onboarding\Setup;
 
-use Give\DonationForms\DonationFormsAdminPage;
+use Give\DonationForms\V2\DonationFormsAdminPage;
 
 defined('ABSPATH') || exit;
 
@@ -63,8 +63,7 @@ class Page
             esc_html__('Setup', 'give'),
             'manage_give_settings',
             'give-setup',
-            [$this, 'render_page'],
-            2
+            [$this, 'render_page']
         );
     }
 

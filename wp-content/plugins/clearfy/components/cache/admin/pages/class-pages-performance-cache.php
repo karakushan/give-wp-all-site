@@ -10,7 +10,7 @@ if( !defined('ABSPATH') ) {
 	exit;
 }
 
-class WCACHE_CachePage extends WBCR\Factory_Templates_109\Pages\PageBase {
+class WCACHE_CachePage extends WBCR\Factory_Templates_127\Pages\PageBase {
 
 	/**
 	 * @see {@inheritDoc}
@@ -87,10 +87,10 @@ class WCACHE_CachePage extends WBCR\Factory_Templates_109\Pages\PageBase {
 	 * We register notifications for some actions
 	 *
 	 * @param                         $notices
-	 * @param \Wbcr_Factory460_Plugin $plugin
+	 * @param \Wbcr_Factory474_Plugin $plugin
 	 *
 	 * @return array
-	 * @see libs\factory\pages\themplates\FactoryPages460_ImpressiveThemplate
+	 * @see libs\factory\pages\themplates\FactoryPages474_ImpressiveThemplate
 	 */
 	public function getActionNotices($notices)
 	{
@@ -184,6 +184,23 @@ If the commonly used files are cached by browser, the visitors’ browsers do no
 			//'layout' => ['hint-type' => 'icon', 'hint-icon-color' => 'grey'],
 			'hint' => __('Specify URLs of pages or posts that should never be cached (one per line). The domain part of the URL will be stripped automatically.
 Use (.*) wildcards to address multiple URLs under a given path.', 'clearfy'),
+		];
+
+		$options[] = [
+			'type' => 'textarea',
+			'name' => 'cache_reject_user_agents',
+			'title' => __('Rejected User Agents', 'clearfy'),
+			'default' => "facebookexternalhit\nTwitterbot\nLinkedInBot\nWhatsApp\nMediatoolkitbot",
+			//'layout' => ['hint-type' => 'icon', 'hint-icon-color' => 'grey'],
+			'hint' => __('Strings in the HTTP ’User Agent’ header that prevent WP-Cache from caching bot, spiders, and crawlers’ requests. Note that super cached files are still sent to these agents if they already exists.', 'clearfy'),
+		];
+
+		$options[] = [
+			'type' => 'textarea',
+			'name' => 'cache_reject_cookies',
+			'title' => __('Rejected Cookies', 'clearfy'),
+			//'layout' => ['hint-type' => 'icon', 'hint-icon-color' => 'grey'],
+			'hint' => __('Do not cache pages when these cookies are set. Add the cookie names here, one per line. Matches on fragments, so "test" will match "WordPress_test_cookie". (Simple caching only)', 'clearfy'),
 		];
 
 		$options[] = [

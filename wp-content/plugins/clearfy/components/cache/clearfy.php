@@ -15,7 +15,7 @@ if( !defined('ABSPATH') ) {
 }
 
 if( !defined('WCACHE_PLUGIN_ACTIVE') ) {
-	define('WCACHE_PLUGIN_VERSION', '1.0.1');
+	define('WCACHE_PLUGIN_VERSION', '1.0.2');
 	define('WCACHE_TEXT_DOMAIN', 'clearfy_cache');
 	define('WCACHE_PLUGIN_ACTIVE', true);
 
@@ -31,7 +31,7 @@ if( !defined('WCACHE_PLUGIN_ACTIVE') ) {
 	}
 
 	if( !defined('WCACHE_PLUGIN_URL') ) {
-		define('WCACHE_PLUGIN_URL', plugins_url(null, __FILE__));
+		define('WCACHE_PLUGIN_URL', plugins_url('', __FILE__));
 	}
 
 	try {

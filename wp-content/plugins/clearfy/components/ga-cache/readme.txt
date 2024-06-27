@@ -3,7 +3,7 @@ Tags: analytics,google analytics,google analytics dashboard,google analytics plu
 Contributors: webcraftic, alexkovalevv, JeromeMeyer62, creativemotion
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=VDX7JNTQPNPFW
 Requires at least: 5.2
-Tested up to: 6.0
+Tested up to: 6.4
 Requires PHP: 7.0
 Stable tag: trunk
 License: GPLv2
@@ -75,6 +75,14 @@ We invite you to check out a few other related free plugins that our team has al
 1. Control panel
 
 == Changelog ==
+= 3.2.7 (21.11.2023) =
+* Added: Compatibility with Wordpress 6.4
+* Added: Compatibility with php 8.2
+
+= 3.2.6 (22.03.2023) =
+* Fixed: Freemius framework conflict
+* Added: Compatibility with Wordpress 6.2
+
 = 3.2.5 (30.05.2022) =
 * Added: Compatibility with Wordpress 6.0
 

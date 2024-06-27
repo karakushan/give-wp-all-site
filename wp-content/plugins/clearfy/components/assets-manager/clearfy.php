@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 if ( ! defined( 'WGZ_PLUGIN_ACTIVE' ) ) {
-	define( 'WGZ_PLUGIN_VERSION', '2.1.4' );
+	define( 'WGZ_PLUGIN_VERSION', '2.1.7' );
 	define( 'WGZ_TEXT_DOMAIN', 'gonzales' );
 	define( 'WGZ_PLUGIN_ACTIVE', true );
 
@@ -31,7 +31,7 @@ if ( ! defined( 'WGZ_PLUGIN_ACTIVE' ) ) {
 	}
 
 	if ( ! defined( 'WGZ_PLUGIN_URL' ) ) {
-		define( 'WGZ_PLUGIN_URL', plugins_url( null, __FILE__ ) );
+		define( 'WGZ_PLUGIN_URL', plugins_url( '', __FILE__ ) );
 	}
 
 	try {

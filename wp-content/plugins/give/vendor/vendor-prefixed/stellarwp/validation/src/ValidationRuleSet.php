@@ -2,7 +2,7 @@
 /**
  * @license GPL-2.0-or-later
  *
- * Modified by impress-org on 20-January-2023 using Strauss.
+ * Modified by impress-org on 26-June-2024 using Strauss.
  * @see https://github.com/BrianHenryIE/strauss
  */
 
@@ -34,7 +34,7 @@ class ValidationRuleSet implements IteratorAggregate, JsonSerializable
     private $rules = [];
 
     /**
-     * @unreleased
+     * @since 1.0.0
      */
     public function __construct(ValidationRulesRegistrar $register)
     {
@@ -44,37 +44,240 @@ class ValidationRuleSet implements IteratorAggregate, JsonSerializable
     /**
      * Pass a set of validation rules in the form of the rule id, a rule instance, or a closure.
      *
-     * @unreleased
+     * @since 1.0.0
      *
      * @param string|ValidationRule|Closure ...$rules
      */
     public function rules(...$rules): self
     {
         foreach ($rules as $rule) {
-            if ($rule instanceof Closure) {
-                $this->validateClosureRule($rule);
-                $this->rules[] = $rule;
-            } elseif ($rule instanceof ValidationRule) {
-                $this->rules[] = $rule;
-            } elseif (is_string($rule)) {
-                $this->rules[] = $this->getRuleFromString($rule);
-            } else {
-                Config::throwInvalidArgumentException(
-                    sprintf(
-                        'Validation rule must be a string, instance of %s, or a closure',
-                        ValidationRule::class
-                    )
-                );
-            }
+            $this->rules[] = $this->sanitizeRule($rule);
         }
 
         return $this;
     }
 
     /**
+     * Prepends a given rule to the start of the rules array.
+     *
+     * @since 1.3.0
+     *
+     * @param string|ValidationRule|Closure $rule
+     */
+    public function prependRule($rule): self
+    {
+        array_unshift($this->rules, $this->sanitizeRule($rule));
+
+        return $this;
+    }
+
+    /**
+     * Replaces the given rule at the same index position or appends it if it doesn't exist.
+     *
+     * @since 1.3.0
+     *
+     * @param string|ValidationRule|Closure $rule
+     *
+     * @return bool True if the rule was replaced, false if it was appended.
+     */
+    public function replaceOrAppendRule(string $ruleId, $rule): bool
+    {
+        $replaced = $this->replaceRule($ruleId, $rule);
+
+        if (!$replaced) {
+            $this->rules($rule);
+
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Replaces the given rule at the same index position or prepends it if it doesn't exist.
+     *
+     * @since 1.3.0
+     *
+     * @param string|ValidationRule|Closure $rule
+     *
+     * @return bool True if the rule was replaced, false if it was prepended.
+     */
+    public function replaceOrPrependRule(string $ruleId, $rule): bool
+    {
+        $replaced = $this->replaceRule($ruleId, $rule);
+
+        if (!$replaced) {
+            $this->prependRule($rule);
+
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Replace a rule with the given id with the given rule at the same index position. Returns true if the rule was
+     * replaced, false otherwise.
+     *
+     * @since 1.3.0
+     *
+     * @param string|ValidationRule|Closure $rule
+     */
+    public function replaceRule(string $ruleId, $rule): bool
+    {
+        foreach ($this->rules as $index => $validationRule) {
+            if ($validationRule instanceof ValidationRule && $validationRule::id() === $ruleId) {
+                $this->rules[$index] = $this->sanitizeRule($rule);
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Finds and returns the validation rule by id. Does not work for Closure rules.
+     *
+     * @since 1.0.0
+     *
+     * @return ValidationRule|null
+     */
+    public function getRule(string $rule)
+    {
+        foreach ($this->rules as $validationRule) {
+            if ($validationRule instanceof ValidationRule && $validationRule::id() === $rule) {
+                return $validationRule;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Removes the rules with the given id.
+     *
+     * @since 1.0.0
+     *
+     * @return void
+     */
+    public function removeRuleWithId(string $id): self
+    {
+        $this->rules = array_filter($this->rules, static function ($rule) use ($id) {
+            return $rule instanceof ValidationRule && $rule::id() !== $id;
+        });
+
+        return $this;
+    }
+
+    /**
+     * Returns the validation rules.
+     *
+     * @since 1.0.0
+     */
+    public function getRules(): array
+    {
+        return $this->rules;
+    }
+
+    /**
+     * Returns whether the given rule is present in the validation rules. Does not work with Closure Rules.
+     *
+     * @since 1.0.0
+     */
+    public function hasRule(string $rule): bool
+    {
+        foreach ($this->rules as $validationRule) {
+            if ($validationRule instanceof ValidationRule && $validationRule::id() === $rule) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Returns whether the array has any rules set.
+     *
+     * @since 1.0.0
+     */
+    public function hasRules(): bool
+    {
+        return !empty($this->rules);
+    }
+
+    /**
+     * Along with the IteratorAggregate interface, we can iterate over the validation rules.
+     *
+     * @since 1.0.0
+     *
+     * @inheritDoc
+     */
+    public function getIterator(): Traversable
+    {
+        return new ArrayIterator($this->rules);
+    }
+
+    /**
+     * Runs through the validation rules and compiles a list of rules that can be used by the front end.
+     *
+     * Resulting data:
+     * [
+     *   ruleId => ruleOption,
+     *   ...
+     * ]
+     *
+     * @inheritDoc
+     *
+     * @since 1.0.0
+     */
+    #[\ReturnTypeWillChange]
+    public function jsonSerialize()
+    {
+        $rules = [];
+
+        foreach ($this->rules as $rule) {
+            if ($rule instanceof ValidatesOnFrontEnd) {
+                $rules[$rule::id()] = $rule->serializeOption();
+            }
+        }
+
+        return $rules;
+    }
+
+    /**
+     * Sanitizes a given rule by validating the rule and making sure it's safe to use.
+     *
+     * @since 1.3.0
+     *
+     * @param mixed $rule
+     *
+     * @return Closure|ValidationRule
+     */
+    private function sanitizeRule($rule)
+    {
+        if ($rule instanceof Closure) {
+            $this->validateClosureRule($rule);
+
+            return $rule;
+        } elseif ($rule instanceof ValidationRule) {
+            return $rule;
+        } elseif (is_string($rule)) {
+            return $this->getRuleFromString($rule);
+        } else {
+            Config::throwInvalidArgumentException(
+                sprintf(
+                    'Validation rule must be a string, instance of %s, or a closure',
+                    ValidationRule::class
+                )
+            );
+        }
+    }
+
+    /**
      * Validates that a closure rule has the proper parameters to be used as a validation rule.
      *
-     * @unreleased
+     * @since 1.0.0
      *
      * @return void
      */
@@ -122,7 +325,7 @@ class ValidationRuleSet implements IteratorAggregate, JsonSerializable
     /**
      * Retrieves the parameter type with PHP 7.0 compatibility.
      *
-     * @unreleased
+     * @since 1.0.0
      *
      * @return string|null
      */
@@ -145,7 +348,8 @@ class ValidationRuleSet implements IteratorAggregate, JsonSerializable
     /**
      * Takes a validation rule string and returns the corresponding rule instance.
      *
-     * @unreleased
+     * @since 1.3.2 use list syntax for PHP 7.0 compatibility
+     * @since 1.0.0
      */
     private function getRuleFromString(string $rule): ValidationRule
     {
@@ -166,111 +370,5 @@ class ValidationRuleSet implements IteratorAggregate, JsonSerializable
         }
 
         return $ruleClass::fromString($ruleOptions);
-    }
-
-    /**
-     * Finds and returns the validation rule by id. Does not work for Closure rules.
-     *
-     * @return ValidationRule|null
-     */
-    public function getRule(string $rule)
-    {
-        foreach ($this->rules as $validationRule) {
-            if ($validationRule instanceof ValidationRule && $validationRule::id() === $rule) {
-                return $validationRule;
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * Removes the rules with the given id.
-     *
-     * @unreleased
-     *
-     * @return void
-     */
-    public function removeRuleWithId(string $id): self
-    {
-        $this->rules = array_filter($this->rules, static function ($rule) use ($id) {
-            return $rule instanceof ValidationRule && $rule::id() !== $id;
-        });
-
-        return $this;
-    }
-
-    /**
-     * Returns the validation rules.
-     *
-     * @unreleased
-     */
-    public function getRules(): array
-    {
-        return $this->rules;
-    }
-
-    /**
-     * Returns whether the given rule is present in the validation rules. Does not work with Closure Rules.
-     *
-     * @unreleased
-     */
-    public function hasRule(string $rule): bool
-    {
-        foreach ($this->rules as $validationRule) {
-            if ($validationRule instanceof ValidationRule && $validationRule::id() === $rule) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Returns whether the array has any rules set.
-     *
-     * @unreleased
-     */
-    public function hasRules(): bool
-    {
-        return !empty($this->rules);
-    }
-
-    /**
-     * Along with the IteratorAggregate interface, we can iterate over the validation rules.
-     *
-     * @unreleased
-     *
-     * @inheritDoc
-     */
-    public function getIterator(): Traversable
-    {
-        return new ArrayIterator($this->rules);
-    }
-
-    /**
-     * Runs through the validation rules and compiles a list of rules that can be used by the front end.
-     *
-     * Resulting data:
-     * [
-     *   ruleId => ruleOption,
-     *   ...
-     * ]
-     *
-     * @inheritDoc
-     *
-     * @unreleased
-     */
-    public function jsonSerialize()
-    {
-        $rules = [];
-
-        foreach ($this->rules as $rule) {
-            if ($rule instanceof ValidatesOnFrontEnd) {
-                $rules[$rule::id()] = $rule->serializeOption();
-            }
-        }
-
-        return $rules;
     }
 }

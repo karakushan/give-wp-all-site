@@ -1,0 +1,51 @@
+version: '3.7'
+services:
+  db:
+    # We use a mariadb image which supports both amd64 & arm64 architecture
+    image: mysql:8.0.27
+    # If you really want to use MySQL, uncomment the following line
+    #image: mysql:8.0.27
+    command: '--default-authentication-plugin=mysql_native_password'
+    volumes:
+      - db_data:/var/lib/mysql
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=somewordpress
+      - MYSQL_DATABASE=wordpress
+      - MYSQL_USER=wordpress
+      - MYSQL_PASSWORD=wordpress
+    expose:
+      - 3306
+      - 33060
+    ports:
+      - 3306:3306
+  wordpress:
+    image: wordpress:5.8.1-php7.4-apache
+    build:
+      context: ./docker/apache
+      dockerfile: Dockerfile
+    ports:
+      - 8080:80
+    restart: always
+    environment:
+      - WORDPRESS_DB_HOST=db
+      - WORDPRESS_DB_USER=wordpress
+      - WORDPRESS_DB_PASSWORD=wordpress
+      - WORDPRESS_DB_NAME=wordpress
+      - WORDPRESS_LOCAL_DEV=true
+      - WORDPRESS_MAILTRAP_USERNAME=221f66dfa5dc86
+      - WORDPRESS_MAILTRAP_PASSWORD=03a18f3433fc8a
+      - WORDPRESS_DEBUG=1
+    #      - XDEBUG_MODE=debug
+    #      - XDEBUG_CLIENT_HOST=host.docker.internal
+    #      - XDEBUG_CLIENT_PORT=9003
+    volumes:
+      - .:/var/www/html
+      - ./docker/apache/logs:/var/log/apache2
+  wpcli:
+    image: wordpress:cli
+    volumes:
+      - .:/var/www/html
+      - ./wp-cli:/var/www/html/wp-cli
+volumes:
+  db_data:

@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @author        Alex Kovalev <alex.kovalevv@gmail.com>, Github: https://github.com/alexkovalevv
  * @copyright (c) 2018 Webraftic Ltd
  */
-class WUPM_AdvancedPage extends WBCR\Factory_Templates_109\Pages\PageBase {
+class WUPM_AdvancedPage extends WBCR\Factory_Templates_127\Pages\PageBase {
 
 	/**
 	 * {@inheritDoc}
@@ -66,9 +66,9 @@ class WUPM_AdvancedPage extends WBCR\Factory_Templates_109\Pages\PageBase {
 	 *
 	 * @author Alexander Kovalev <alex.kovalevv@gmail.com>
 	 *
-	 * @param \Wbcr_Factory460_Plugin $plugin
+	 * @param \Wbcr_Factory474_Plugin $plugin
 	 */
-	public function __construct( Wbcr_Factory460_Plugin $plugin ) {
+	public function __construct( Wbcr_Factory474_Plugin $plugin ) {
 		$this->menu_title = __( 'Advanced', 'webcraftic-updates-manager' );
 
 		parent::__construct( $plugin );
@@ -79,8 +79,8 @@ class WUPM_AdvancedPage extends WBCR\Factory_Templates_109\Pages\PageBase {
 	 *
 	 * @author Alexander Kovalev <alex.kovalevv@gmail.com>
 	 *
-	 * @param \Wbcr_Factory460_ScriptList $scripts
-	 * @param \Wbcr_Factory460_StyleList  $styles
+	 * @param \Wbcr_Factory474_ScriptList $scripts
+	 * @param \Wbcr_Factory474_StyleList  $styles
 	 */
 	public function assets( $scripts, $styles ) {
 		parent::assets( $scripts, $styles );

@@ -4,11 +4,11 @@
  * Plugin URI: https://webcraftic.com
  * Description: Ever look at the HTML markup of your website and notice how sloppy and amateurish it looks? The HTML Мinify options cleans up sloppy looking markup and minifies, which also speeds up download.
  * Author: Webcraftic <wordpress.webraftic@gmail.com>
- * Version: 1.1.1
+ * Version: 1.1.2
  * Text Domain: html-minify
  * Domain Path: /languages/
  * Author URI: https://webcraftic.com
- * Framework Version: FACTORY_460_VERSION
+ * Framework Version: FACTORY_474_VERSION
  */
 
 /*
@@ -59,15 +59,15 @@ $whtml_plugin_info = array(
 
 	// FRAMEWORK MODULES
 	'load_factory_modules' => array(
-		array( 'libs/factory/bootstrap', 'factory_bootstrap_461', 'admin' ),
-		array( 'libs/factory/forms', 'factory_forms_457', 'admin' ),
-		array( 'libs/factory/pages', 'factory_pages_460', 'admin' ),
-		array( 'libs/factory/clearfy', 'factory_templates_109', 'all' ),
-		array( 'libs/factory/adverts', 'factory_adverts_137', 'admin')
+		array( 'libs/factory/bootstrap', 'factory_bootstrap_476', 'admin' ),
+		array( 'libs/factory/forms', 'factory_forms_474', 'admin' ),
+		array( 'libs/factory/pages', 'factory_pages_474', 'admin' ),
+		array( 'libs/factory/clearfy', 'factory_templates_127', 'all' ),
+		array( 'libs/factory/adverts', 'factory_adverts_152', 'admin')
 	)
 );
 
-$whtml_compatibility = new Wbcr_Factory460_Requirements( __FILE__, array_merge( $whtml_plugin_info, array(
+$whtml_compatibility = new Wbcr_Factory474_Requirements( __FILE__, array_merge( $whtml_plugin_info, array(
 	'plugin_already_activate'          => defined( 'WHTM_PLUGIN_ACTIVE' ),
 	'required_php_version'             => '5.4',
 	'required_wp_version'              => '4.2.0',
@@ -96,7 +96,7 @@ define( 'WHTM_PLUGIN_ACTIVE', true );
 define( 'WHTM_PLUGIN_VERSION', $whtml_compatibility->get_plugin_version() );
 define( 'WHTM_PLUGIN_DIR', dirname( __FILE__ ) );
 define( 'WHTM_PLUGIN_BASE', plugin_basename( __FILE__ ) );
-define( 'WHTM_PLUGIN_URL', plugins_url( null, __FILE__ ) );
+define( 'WHTM_PLUGIN_URL', plugins_url( '', __FILE__ ) );
 
 
 

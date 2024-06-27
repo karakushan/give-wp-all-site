@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 if ( ! defined( 'WUPM_PLUGIN_ACTIVE' ) ) {
-	define( 'WUPM_PLUGIN_VERSION', '1.1.5' );
+	define( 'WUPM_PLUGIN_VERSION', '1.1.7' );
 	define( 'WUPM_TEXT_DOMAIN', 'webcraftic-updates-manager' );
 	define( 'WUPM_PLUGIN_ACTIVE', true );
 
@@ -31,7 +31,7 @@ if ( ! defined( 'WUPM_PLUGIN_ACTIVE' ) ) {
 	}
 
 	if ( ! defined( 'WUPM_PLUGIN_URL' ) ) {
-		define( 'WUPM_PLUGIN_URL', plugins_url( null, __FILE__ ) );
+		define( 'WUPM_PLUGIN_URL', plugins_url( '', __FILE__ ) );
 	}
 
 	try {

@@ -1,6 +1,7 @@
 <?php
 
 use Give\Log\Log;
+use Give\DonationForms\DonationQuery;
 
 /**
  * This template is used to display the goal with [give_goal]
@@ -8,6 +9,7 @@ use Give\Log\Log;
 
 /**
  * @var int $form_id form id passed from the give_show_goal_progress() context
+ * @var $args array shortcode args
  */
 
 if ( empty($form_id) ) {
@@ -32,9 +34,26 @@ if ( ( isset( $args['show_goal'] ) && ! filter_var( $args['show_goal'], FILTER_V
 
 $goal_progress_stats = give_goal_progress_stats( $form );
 $goal_format         = $goal_progress_stats['format'];
-$color               = give_get_meta( $form_id, '_give_goal_color', true );
+$color               = empty($args['color']) ? give_get_meta( $form_id, '_give_goal_color', true ) : sanitize_hex_color( $args['color'] );
 $show_text           = isset( $args['show_text'] ) ? filter_var( $args['show_text'], FILTER_VALIDATE_BOOLEAN ) : true;
 $show_bar            = isset( $args['show_bar'] ) ? filter_var( $args['show_bar'], FILTER_VALIDATE_BOOLEAN ) : true;
+
+/**
+ * @since 3.12.0 use DonationQuery to get donation amounts
+ */
+$form_income = 0;
+$donationQuery = (new DonationQuery())->form($form->ID);
+
+if ($args['start_date'] === $args['end_date']) {
+    $form_income = $donationQuery->sumIntendedAmount();
+} else {
+    // If end date is not set, we have to use the current datetime.
+    if ( ! $args['end_date']) {
+        $args['end_date'] = date('Y-m-d H:i:s');
+    }
+
+    $form_income = $donationQuery->between($args['start_date'], $args['end_date'])->sumIntendedAmount();
+}
 
 /**
  * Allow filtering the goal stats used for this shortcode context.
@@ -49,7 +68,7 @@ $show_bar            = isset( $args['show_bar'] ) ? filter_var( $args['show_bar'
 $shortcode_stats = apply_filters(
     'give_goal_shortcode_stats',
     array(
-        'income' => $form->get_earnings(),
+        'income' => $form_income,
         'goal'   => $goal_progress_stats['raw_goal'],
     ),
     $form_id,

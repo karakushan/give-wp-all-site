@@ -18,13 +18,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 if ( ! defined( 'LOADING_DISABLE_ADMIN_NOTICES_AS_ADDON' ) ) {
 	add_filter( 'plugin_row_meta', function ( $links, $file ) {
 		if ( $file == WDN_PLUGIN_BASE ) {
-			$url = 'https://clearfy.pro';
-
-			if ( get_locale() == 'ru_RU' ) {
-				$url = 'https://ru.clearfy.pro';
-			}
+			$url     = 'https://clearfy.pro/disable-admin-notices/';
 			$url     .= '?utm_source=wordpress.org&utm_campaign=' . WDN_Plugin::app()->getPluginName();
-			$links[] = '<a href="' . $url . '" style="color: #FF5722;font-weight: bold;" target="_blank">' . __( 'Get ultimate plugin free', 'disable-admin-notices' ) . '</a>';
+			$links[] = '<a href="' . $url . '" style="color: #FF5722;font-weight: bold;" target="_blank">' . __( 'Get premium plugin', 'disable-admin-notices' ) . '</a>';
 		}
 
 		return $links;
@@ -33,7 +29,7 @@ if ( ! defined( 'LOADING_DISABLE_ADMIN_NOTICES_AS_ADDON' ) ) {
 	/**
 	 * Изменяем ссылку по умолчанию на собственную в виджете "Голосу за нас".
 	 *
-	 * Ссылка ведет на страницу рейтинга в репозитори Wordpress.org
+	 * Ссылка ведет на страницу рейтинга в репозитории Wordpress.org
 	 * https://wordpress.org/support/plugin/disable-admin-notices/reviews/
 	 *
 	 * @param string $page_url
@@ -44,7 +40,7 @@ if ( ! defined( 'LOADING_DISABLE_ADMIN_NOTICES_AS_ADDON' ) ) {
 	 *
 	 * @author Alexander Kovalev <alex.kovalevv@gmail.com>
 	 */
-	add_filter( 'wbcr_factory_pages_460_imppage_rating_widget_url', function ( $page_url, $plugin_name ) {
+	add_filter( 'wbcr_factory_pages_474_imppage_rating_widget_url', function ( $page_url, $plugin_name ) {
 		if ( $plugin_name == WDN_Plugin::app()->getPluginName() ) {
 			return 'https://goo.gl/68ucHp';
 		}

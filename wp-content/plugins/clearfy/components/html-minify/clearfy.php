@@ -15,7 +15,7 @@ if( !defined('ABSPATH') ) {
 }
 
 if( !defined('WHTM_PLUGIN_ACTIVE') ) {
-	define('WHTM_PLUGIN_VERSION', '1.1.1');
+	define('WHTM_PLUGIN_VERSION', '1.1.2');
 	define('WHTM_TEXT_DOMAIN', 'html-minify');
 	define('WHTM_PLUGIN_ACTIVE', true);
 
@@ -31,7 +31,7 @@ if( !defined('WHTM_PLUGIN_ACTIVE') ) {
 	}
 
 	if( !defined('WHTM_PLUGIN_URL') ) {
-		define('WHTM_PLUGIN_URL', plugins_url(null, __FILE__));
+		define('WHTM_PLUGIN_URL', plugins_url('', __FILE__));
 	}
 
 	try {

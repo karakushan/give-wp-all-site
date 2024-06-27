@@ -2,8 +2,9 @@
 
 namespace Give\PaymentGateways\PayPalCommerce;
 
-use Give\ConnectClient\ConnectClient;
+use Give\Framework\Http\ConnectServer\Client\ConnectClient;
 use Give\PaymentGateways\PayPalCommerce\Models\MerchantDetail;
+use Give\PaymentGateways\PayPalCommerce\PayPalCheckoutSdk\ProcessorResponseError;
 use Give\PaymentGateways\PayPalCommerce\Repositories\MerchantDetails;
 use Give\PaymentGateways\PayPalCommerce\Repositories\PayPalAuth;
 use Give\PaymentGateways\PayPalCommerce\Repositories\PayPalOrder;
@@ -65,12 +66,12 @@ class AjaxRequestHandler
      *
      * @since 2.9.0
      *
-     * @param Webhooks        $webhooksRepository
-     * @param MerchantDetail  $merchantDetails
+     * @param Webhooks $webhooksRepository
+     * @param MerchantDetail $merchantDetails
      * @param MerchantDetails $merchantRepository
-     * @param RefreshToken    $refreshToken
-     * @param Settings        $settings
-     * @param PayPalAuth      $payPalAuth
+     * @param RefreshToken $refreshToken
+     * @param Settings $settings
+     * @param PayPalAuth $payPalAuth
      */
     public function __construct(
         Webhooks $webhooksRepository,
@@ -89,54 +90,88 @@ class AjaxRequestHandler
     }
 
     /**
-     *  give_paypal_commerce_user_onboarded ajax action handler
+     * give_paypal_commerce_user_onboarded ajax action handler
      *
+     * @since 2.32.0 Return error response on exception when fetch access token from authorization code.
      * @since 2.9.0
      */
     public function onBoardedUserAjaxRequestHandler()
     {
         $this->validateAdminRequest();
 
+        if (empty($_GET['mode']) || ! in_array($_GET['mode'], ['sandbox', 'live'])) {
+            wp_send_json_error('Must include valid mode');
+        }
+
+        $mode = sanitize_text_field(wp_unslash($_GET['mode']));
+
+        // Set PayPal client mode.
+        give(PayPalClient::class)->setMode($mode);
+
         $partnerLinkInfo = $this->settings->getPartnerLinkDetails();
 
-        $payPalResponse = $this->payPalAuth->getTokenFromAuthorizationCode(
-            give_clean($_GET['authCode']),
-            give_clean($_GET['sharedId']),
-            $partnerLinkInfo['nonce']
-        );
-
-        if ( ! $payPalResponse || array_key_exists('error', $payPalResponse)) {
+        try {
+            $payPalResponse = $this->payPalAuth->getTokenFromAuthorizationCode(
+                give_clean($_GET['authCode']),
+                give_clean($_GET['sharedId']),
+                $partnerLinkInfo['nonce']
+            );
+        } catch (\Exception $exception) {
             wp_send_json_error();
         }
 
         $this->settings->updateAccessToken($payPalResponse);
 
-        give(RefreshToken::class)->registerCronJobToRefreshToken($payPalResponse['expiresIn']);
+        // Set cron job to refresh token.
+        $refreshToken = give(RefreshToken::class);
+        $refreshToken->setMode($mode);
+        $refreshToken->registerCronJobToRefreshToken($payPalResponse['expiresIn']);
 
         wp_send_json_success();
     }
 
     /**
-     * give_paypal_commerce_get_partner_url action handler
+     * This function handle ajax request with give_paypal_commerce_get_partner_url action.
      *
+     * @since 3.0.0 Add support for accountType. This param is required to get partner link.
+     * @since 2.30.0 Add support for mode param.
      * @since 2.9.0
      */
     public function onGetPartnerUrlAjaxRequestHandler()
     {
         $this->validateAdminRequest();
 
+        if (empty($accountType = $_GET['accountType']) || ! in_array($accountType, ScriptLoader::$accountTypes, true)) {
+            wp_send_json_error('Must include valid account type');
+        }
+
         if (empty($country = $_GET['countryCode']) || ! isset(give_get_country_list()[$country])) {
             wp_send_json_error('Must include valid 2-character country code');
         }
 
-        $data = $this->payPalAuth->getSellerPartnerLink(
-            admin_url(
-                'edit.php?post_type=give_forms&page=give-settings&tab=gateways&section=paypal&group=paypal-commerce'
-            ),
-            $country
+        if (empty($_GET['mode']) || ! in_array($_GET['mode'], ['sandbox', 'live'])) {
+            wp_send_json_error('Must include valid mode');
+        }
+
+        $country = sanitize_text_field(wp_unslash($_GET['countryCode']));
+        $accountType = sanitize_text_field(wp_unslash($_GET['accountType']));
+        $mode = sanitize_text_field(wp_unslash($_GET['mode']));
+        $redirectUrl = add_query_arg(
+            [
+                'tab' => 'gateways',
+                'section' => 'paypal',
+                'group' => 'paypal-commerce',
+                'mode' => $mode,
+            ],
+            admin_url('edit.php?post_type=give_forms&page=give-settings')
         );
 
-        if ( ! $data) {
+        // Set PayPal client mode.
+        give(PayPalClient::class)->setMode($mode);
+
+        $data = $this->payPalAuth->getSellerPartnerLink($redirectUrl, $accountType);
+
+        if (! $data) {
             wp_send_json_error();
         }
 
@@ -149,24 +184,43 @@ class AjaxRequestHandler
     /**
      * give_paypal_commerce_disconnect_account ajax request handler.
      *
+     * @since 3.13.0 Add new $keepWebhooks option
+     * @since 2.30.0 Add support for mode param.
+     * @since 2.25.0 Remove merchant seller token.
      * @since 2.9.0
      */
     public function removePayPalAccount()
     {
-        $this->validateAdminRequest();
-
-        // Remove the webhook from PayPal if there is one
-        if ($webhookConfig = $this->webhooksRepository->getWebhookConfig()) {
-            $this->webhooksRepository->deleteWebhook($this->merchantDetails->accessToken, $webhookConfig->id);
-            $this->webhooksRepository->deleteWebhookConfig();
+        if (! current_user_can('manage_give_settings')) {
+            wp_send_json_error(['error' => esc_html__('You are not allowed to perform this action.', 'give')]);
         }
 
-        $this->merchantRepository->delete();
-        $this->merchantRepository->deleteAccountErrors();
-        $this->merchantRepository->deleteClientToken();
-        $this->refreshToken->deleteRefreshTokenCronJob();
+        try {
+            $mode = give_clean($_POST['mode']);
+            $keepWebhooks = rest_sanitize_boolean($_POST['keep-webhooks']);
+            $this->webhooksRepository->setMode($mode);
+            $this->merchantRepository->setMode($mode);
+            $this->refreshToken->setMode($mode);
+            $this->settings->setMode($mode);
 
-        wp_send_json_success();
+            $this->validateAdminRequest();
+
+            // Remove the webhook from PayPal if there is one
+            if ( ! $keepWebhooks && $webhookConfig = $this->webhooksRepository->getWebhookConfig()) {
+                $this->webhooksRepository->deleteWebhook($this->merchantDetails->accessToken, $webhookConfig->id);
+                $this->webhooksRepository->deleteWebhookConfig();
+            }
+
+            $this->merchantRepository->delete();
+            $this->merchantRepository->deleteAccountErrors();
+            $this->merchantRepository->deleteClientToken();
+            $this->settings->deleteSellerAccessToken();
+            $this->refreshToken->deleteRefreshTokenCronJob();
+
+            wp_send_json_success();
+        } catch (\Exception $exception) {
+            wp_send_json_error(['error' => $exception->getMessage()]);
+        }
     }
 
     /**
@@ -174,37 +228,13 @@ class AjaxRequestHandler
      *
      * @todo: handle payment create error on frontend.
      *
+     * @since 3.1.0 Remove unused variable from createOrder argument.
      * @since 2.9.0
      */
     public function createOrder()
     {
         $this->validateFrontendRequest();
-
-        $postData = give_clean($_POST);
-        $formId = absint($postData['give-form-id']);
-
-        $data = [
-            'formId' => $formId,
-            'formTitle' => give_payment_gateway_item_title(['post_data' => $postData], 127),
-            'donationAmount' => isset($postData['give-amount']) ?
-                (float)apply_filters(
-                    'give_donation_total',
-                    give_maybe_sanitize_amount(
-                        $postData['give-amount'],
-                        ['currency' => give_get_currency($formId)]
-                    )
-                ) :
-                '0.00',
-            'payer' => [
-                'firstName' => $postData['give_first'],
-                'lastName' => $postData['give_last'],
-                'email' => $postData['give_email'],
-                'address' => $this->getDonorAddressFromPostedDataForPaypalOrder($postData),
-            ],
-            'application_context' => [
-                'shipping_preference' => 'NO_SHIPPING',
-            ],
-        ];
+        $data = $this->getOrderData();
 
         try {
             $result = give(PayPalOrder::class)->createOrder($data);
@@ -224,10 +254,41 @@ class AjaxRequestHandler
     }
 
     /**
+     * @since 3.4.2
+     */
+    private function getOrderData(): array
+    {
+        $postData = give_clean($_POST);
+        $formId = absint($postData['give-form-id']);
+        $donorAddress = $this->getDonorAddressFromPostedDataForPaypalOrder($postData);
+
+        return [
+            'formId' => $formId,
+            'formTitle' => give_payment_gateway_item_title(['post_data' => $postData], 127),
+            'donationAmount' => isset($postData['give-amount']) ?
+                (float)apply_filters(
+                    'give_donation_total',
+                    give_maybe_sanitize_amount(
+                        $postData['give-amount'],
+                        ['currency' => give_get_currency($formId)]
+                    )
+                ) :
+                '0.00',
+            'payer' => [
+                'firstName' => $postData['give_first'],
+                'lastName' => $postData['give_last'],
+                'email' => $postData['give_email'],
+                'address' => $donorAddress,
+            ],
+        ];
+    }
+
+    /**
      * Approve order.
      *
      * @todo: handle payment capture error on frontend.
      *
+     * @since 3.2.0 Discover error by checking capture status.
      * @since 2.9.0
      */
     public function approveOrder()
@@ -235,20 +296,38 @@ class AjaxRequestHandler
         $this->validateFrontendRequest();
 
         $orderId = give_clean($_GET['order']);
+        $updateAmount = filter_var(give_clean($_GET['update_amount']), FILTER_VALIDATE_BOOLEAN);
 
         try {
+            if ($updateAmount) {
+                give(PayPalOrder::class)->updateOrderAmount($orderId, $this->getOrderData());
+            }
+
             $result = give(PayPalOrder::class)->approveOrder($orderId);
-            wp_send_json_success(
-                [
-                    'order' => $result,
-                ]
-            );
+            // PayPal does not return error in case of invalid cvv. So we need to check capture status and return error.
+            // ref - https://feedback.givewp.com/bug-reports/p/paypal-credit-card-donations-can-generate-a-fatal-error
+            $this->returnErrorOnFailedApproveOrderResponse($result);
+            wp_send_json_success(['order' => $result,]);
         } catch (\Exception $ex) {
-            wp_send_json_error(
-                [
-                    'error' => json_decode($ex->getMessage(), true),
-                ]
-            );
+            wp_send_json_error(['error' => json_decode($ex->getMessage(), true),]);
+        }
+    }
+
+    /**
+     * @since 3.4.2
+     */
+    public function updateOrderAmount()
+    {
+        $this->validateFrontendRequest();
+
+        $orderId = give_clean($_GET['order']);
+
+        try {
+            give(PayPalOrder::class)->updateOrderAmount($orderId, $this->getOrderData());
+
+            wp_send_json_success(['order' => $orderId,]);
+        } catch (\Exception $ex) {
+            wp_send_json_error(['error' => json_decode($ex->getMessage(), true),]);
         }
     }
 
@@ -259,7 +338,7 @@ class AjaxRequestHandler
      */
     public function onBoardingTroubleNotice()
     {
-        if ( ! current_user_can('manage_give_settings')) {
+        if (! current_user_can('manage_give_settings')) {
             wp_die();
         }
 
@@ -298,7 +377,7 @@ class AjaxRequestHandler
      */
     private function validateAdminRequest()
     {
-        if ( ! current_user_can('manage_give_settings')) {
+        if (! current_user_can('manage_give_settings')) {
             wp_die();
         }
     }
@@ -312,31 +391,54 @@ class AjaxRequestHandler
     {
         $formId = absint($_POST['give-form-id']);
 
-        if ( ! $formId || ! give_verify_donation_form_nonce(give_clean($_POST['give-form-hash']), $formId)) {
+        if (! $formId || ! give_verify_donation_form_nonce(give_clean($_POST['give-form-hash']), $formId)) {
             wp_die();
         }
     }
 
     /**
+     * This function should return address array in PayPal rest api accepted format.
+     *
+     * @since 3.1.0 Return address only if setting enabled and has valida country in PayPal accepted formatted.
      * @since 2.11.1
-     *
-     * @param array $postedData
-     *
-     * @return array
      */
-    private function getDonorAddressFromPostedDataForPaypalOrder($postedData)
+    private function getDonorAddressFromPostedDataForPaypalOrder(array $postedData): array
     {
-        if ( ! $this->settings->canCollectBillingInformation()) {
+        if (empty($postedData['billing_country'])) {
             return [];
         }
 
-        $address['address_line1'] = ! empty($postedData['card_address']) ? $postedData['card_address'] : '';
+        $address['address_line_1'] = ! empty($postedData['card_address']) ? $postedData['card_address'] : '';
         $address['address_line_2'] = ! empty($postedData['card_address_2']) ? $postedData['card_address_2'] : '';
-        $address['admin_line_1'] = ! empty($postedData['card_city']) ? $postedData['card_city'] : '';
-        $address['admin_line_2'] = ! empty($postedData['card_state']) ? $postedData['card_state'] : '';
+        $address['admin_area_2'] = ! empty($postedData['card_city']) ? $postedData['card_city'] : '';
+        $address['admin_area_1'] = ! empty($postedData['card_state']) ? $postedData['card_state'] : '';
         $address['postal_code'] = ! empty($postedData['card_zip']) ? $postedData['card_zip'] : '';
         $address['country_code'] = ! empty($postedData['billing_country']) ? $postedData['billing_country'] : '';
 
         return $address;
+    }
+
+    /**
+     * This function should validate PayPal ApproveOrder response and respond to ajax request on error.
+     *
+     * @since 3.2.0
+     */
+    private function returnErrorOnFailedApproveOrderResponse(\stdClass $response)
+    {
+        // Get capture.
+        // ref - https://developer.paypal.com/docs/api/orders/v2/#orders_capture
+        $capture = $response->purchase_units[0]->payments->captures[0];
+
+        // Check if capture status is failed or declined.
+        if (
+            in_array($capture->status, ['FAILED', 'DECLINED'])
+            && property_exists($capture, 'processor_response')
+        ) {
+            $error = ProcessorResponseError::getError($capture->processor_response);
+
+            if ($error) {
+                wp_send_json_error(['error' => $error]);
+            }
+        }
     }
 }

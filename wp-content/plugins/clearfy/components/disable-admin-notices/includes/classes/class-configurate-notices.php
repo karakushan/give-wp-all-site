@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class WDN_ConfigHideNotices extends WBCR\Factory_Templates_109\Configurate {
+class WDN_ConfigHideNotices extends WBCR\Factory_Templates_127\Configurate {
 
 	public function registerActionsAndFilters() {
 		if ( is_admin() ) {
@@ -242,7 +242,8 @@ class WDN_ConfigHideNotices extends WBCR\Factory_Templates_109\Configurate {
 					}
 
 					$salt     = is_multisite() ? get_current_blog_id() : '';
-					$uniq_id1 = md5( strip_tags( str_replace( [ "\t", "\r", "\n", " " ], "", $cont ) ) . $salt );
+					$txt      = preg_replace( '/<(script|style)([^>]+)?>(.*?)<\/(script|style)>/is', '', $cont );
+					$uniq_id1 = md5( strip_tags( str_replace( [ "\t", "\r", "\n", " " ], "", $txt ) ) . $salt );
 					$uniq_id2 = md5( $callback_name . $salt );
 
 					if ( is_array( $callback['function'] ) && sizeof( $callback['function'] ) == 2 ) {
@@ -253,10 +254,8 @@ class WDN_ConfigHideNotices extends WBCR\Factory_Templates_109\Configurate {
 							$uniq_id2    = md5( $class_name . ':' . $method_name );
 						}
 					}
-					$txt = $cont;
-					$txt = preg_replace( '/<(script|style)([^>]+)?>(.*?)<\/(script|style)>/is', '', $txt );
-					$txt = rtrim( trim( $txt ) );
-					$txt = preg_replace( '/^(<div[^>]+>)(.*?)(<\/div>)$/is', '<p>$2</p>', $txt );
+					//$txt = rtrim( trim( $txt ) );
+					//$txt = preg_replace( '/^(<div[^>]+>)(.*?)(<\/div>)$/is', '<p>$2</p>', $txt );
 
 					// All
 					$skip_notice = apply_filters( 'wdn/notifications/catch/all', true, $get_hidden_notices_all, $uniq_id1, $uniq_id2 );

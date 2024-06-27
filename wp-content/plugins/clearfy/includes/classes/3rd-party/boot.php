@@ -7,7 +7,7 @@
  * @version 1.0
  */
 
-add_filter('wbcr_factory_460_form_items', function ($forms_groups, $name) {
+add_filter('wbcr_factory_474_form_items', function ($forms_groups, $name) {
 
 	require_once(WCL_PLUGIN_DIR . '/includes/classes/3rd-party/class-base.php');
 	require_once(WCL_PLUGIN_DIR . '/includes/classes/3rd-party/plugins/class-wp-rocket.php');

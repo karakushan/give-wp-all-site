@@ -1,10 +1,10 @@
 === Disable Admin Notices individually  ===
-Tags: notices, notification, notifications, upgrade, nag
+Tags: notices, notification, notifications, disable, upgrade, nag
 Contributors: webcraftic, alexkovalevv, creativemotion
 Donate link: https://clearfy.pro/disable-admin-notices/
-Requires at least: 4.8
-Tested up to: 5.6
-Requires PHP: 5.6
+Requires at least: 5.2
+Tested up to: 6.4
+Requires PHP: 7.0
 Stable tag: trunk
 License: GPLv2
 
@@ -25,7 +25,7 @@ And still, that you could see which notices are shows, we made the special item 
 <strong>[Premium]</strong> We have also added a Hidden Notices page so that the site administrator can view the entire list of hidden notes and restore some of them, if necessary.
 
 <strong>[Premium]</strong> Compact panel - Instead of notices in the admin panel (no matter how many) a compact panel is displayed, it takes up little space and will not interfere with you. By clicking on the compact panel, you will see all your notes, click again and all your notes are hidden again. This is an easy way to keep track of notes, you won't miss anything, all notes will be available in one click.
-<strong>[Premium]</strong> Block Ad Redericts - This feature will be useful to you to break advertising redirects. Some plugins, when updating or during installation, may redirect you to their page with advertisements or news. If plugins do this too often, it can be a headache for you. Break these redirects with our premium features.
+<strong>[Premium]</strong> Block Ad Redirects - This feature will be useful to you to break advertising redirects. Some plugins, when updating or during installation, may redirect you to their page with advertisements or news. If plugins do this too often, it can be a headache for you. Break these redirects with our premium features.
 <strong>[Premium]</strong> Hide admin bar items (menu) - This function allows you to disable annoying menu items in the admin bar. Some plugins take up space in the admin bar to insert their ads. Just get rid of this ad with the premium features of our plugin.
 <strong>[Premium]</strong> Disable plugins updates nags
 <strong>[Premium]</strong> Disable core updates nags
@@ -62,6 +62,34 @@ If you want to help with the translation, please contact me through this site or
 3. Notifications panel (optional)
 
 == Changelog ==
+= 1.3.4 (22.03.2023) =
+* Added: Compatibility with Wordpress 6.4
+* Added: Compatibility with php 8.2
+
+= 1.3.3 (22.03.2023) =
+* Fixed: Freemius framework conflict
+* Added: Compatibility with Wordpress 6.2
+
+= 1.3.0 (27.05.2022) =
+* Added: Compatibility with Wordpress 6.0
+
+= 1.2.9 (23.03.2022) =
+* Added: Compatibility with Wordpress 5.9
+* Fixed: Minor bugs
+
+= 1.2.8 (13.01.2022) =
+* Fixed: compatibility error with plugin WP Fastest Cache
+
+= 1.2.7 (20.10.2021) =
+* Added: Compatibility with Wordpress 5.8
+* Fixed: Minor bugs
+
+= 1.2.6 (04.02.2021)=
+* ATTENTION! Now the required PHP version is 7.0 or higher.
+
+= 1.2.5 (03.02.2021)=
+* Added: Compatibility with Google SiteKit plugin
+
 = 1.2.4 (16.12.2020)=
 * Added: Subscribe widget
 * Fixed: Minor bugs

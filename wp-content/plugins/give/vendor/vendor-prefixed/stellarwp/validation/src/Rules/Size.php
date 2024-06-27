@@ -2,7 +2,7 @@
 /**
  * @license GPL-2.0-or-later
  *
- * Modified by impress-org on 20-January-2023 using Strauss.
+ * Modified by impress-org on 26-June-2024 using Strauss.
  * @see https://github.com/BrianHenryIE/strauss
  */
 
@@ -17,7 +17,7 @@ use Give\Vendors\StellarWP\Validation\Contracts\ValidationRule;
 use Give\Vendors\StellarWP\Validation\Exceptions\ValidationException;
 
 /**
- * @unreleased
+ * @since 1.0.0
  */
 class Size implements ValidationRule, ValidatesOnFrontEnd
 {
@@ -27,7 +27,7 @@ class Size implements ValidationRule, ValidatesOnFrontEnd
     private $size;
 
     /**
-     * @unreleased
+     * @since 1.0.0
      */
     public function __construct(int $size)
     {
@@ -41,7 +41,7 @@ class Size implements ValidationRule, ValidatesOnFrontEnd
     /**
      * @inheritDoc
      *
-     * @unreleased
+     * @since 1.0.0
      */
     public static function id(): string
     {
@@ -51,7 +51,7 @@ class Size implements ValidationRule, ValidatesOnFrontEnd
     /**
      * @inheritDoc
      *
-     * @unreleased
+     * @since 1.0.0
      */
     public static function fromString(string $options = null): ValidationRule
     {
@@ -65,7 +65,7 @@ class Size implements ValidationRule, ValidatesOnFrontEnd
     /**
      * @inheritDoc
      *
-     * @unreleased
+     * @since 1.0.0
      *
      * @throws ValidationException
      */
@@ -87,7 +87,7 @@ class Size implements ValidationRule, ValidatesOnFrontEnd
     /**
      * @inheritDoc
      *
-     * @unreleased
+     * @since 1.0.0
      */
     public function serializeOption(): int
     {
@@ -95,7 +95,7 @@ class Size implements ValidationRule, ValidatesOnFrontEnd
     }
 
     /**
-     * @unreleased
+     * @since 1.0.0
      */
     public function getSize(): int
     {
@@ -103,7 +103,7 @@ class Size implements ValidationRule, ValidatesOnFrontEnd
     }
 
     /**
-     * @unreleased
+     * @since 1.0.0
      *
      * @return void
      */

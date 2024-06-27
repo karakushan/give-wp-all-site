@@ -151,7 +151,7 @@ function wbcr_ga_get_plugin_options()
 
 /**
  * @param $form
- * @param $page Wbcr_FactoryPages460_ImpressiveThemplate
+ * @param $page Wbcr_FactoryPages474_ImpressiveThemplate
  *
  * @return mixed
  */

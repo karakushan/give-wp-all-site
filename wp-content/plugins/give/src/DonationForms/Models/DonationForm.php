@@ -3,32 +3,33 @@
 namespace Give\DonationForms\Models;
 
 use DateTime;
-use Give\DonationForms\DataTransferObjects\DonationFormQueryData;
-use Give\DonationForms\Properties\DonationFormLevel;
+use Give\DonationForms\Actions\ConvertQueryDataToDonationForm;
+use Give\DonationForms\Factories\DonationFormFactory;
+use Give\DonationForms\Properties\FormSettings;
+use Give\DonationForms\Repositories\DonationFormRepository;
 use Give\DonationForms\ValueObjects\DonationFormStatus;
+use Give\Framework\Blocks\BlockCollection;
+use Give\Framework\Exceptions\Primitives\Exception;
+use Give\Framework\Exceptions\Primitives\InvalidArgumentException;
+use Give\Framework\FieldsAPI\DonationForm as Form;
+use Give\Framework\FieldsAPI\Exceptions\NameCollisionException;
+use Give\Framework\Models\Contracts\ModelCrud;
 use Give\Framework\Models\Contracts\ModelHasFactory;
-use Give\Framework\Models\Contracts\ModelReadOnly;
 use Give\Framework\Models\Model;
 use Give\Framework\Models\ModelQueryBuilder;
-use Give\Framework\Models\ValueObjects\Relationship;
-use Give\Framework\Support\ValueObjects\Money;
 
 /**
- * Class DonationForm
- *
- * @since 2.24.0
+ * @since 3.0.0
  *
  * @property int $id
  * @property string $title
- * @property DonationFormLevel[] $levels
- * @property bool $goalOption
- * @property int $totalNumberOfDonations
- * @property Money $totalAmountDonated
  * @property DateTime $createdAt
  * @property DateTime $updatedAt
  * @property DonationFormStatus $status
+ * @property FormSettings $settings
+ * @property BlockCollection $blocks
  */
-class DonationForm extends Model implements ModelReadOnly
+class DonationForm extends Model implements ModelCrud, ModelHasFactory
 {
     /**
      * @inheritdoc
@@ -36,53 +37,106 @@ class DonationForm extends Model implements ModelReadOnly
     protected $properties = [
         'id' => 'int',
         'title' => 'string',
-        'levels' => 'array',
-        'goalOption' => 'bool',
-        'totalNumberOfDonations' => 'int',
-        'totalAmountDonated' => Money::class,
         'createdAt' => DateTime::class,
         'updatedAt' => DateTime::class,
         'status' => DonationFormStatus::class,
+        'settings' => FormSettings::class,
+        'blocks' => BlockCollection::class,
     ];
 
     /**
-     * @inheritdoc
+     * @since 3.0.0
+     * @return DonationFormFactory
      */
-    protected $relationships = [
-        'donations' => Relationship::HAS_MANY,
-    ];
+    public static function factory(): DonationFormFactory
+    {
+        return new DonationFormFactory(static::class);
+    }
 
     /**
-     * @since 2.24.0
+     * Find donation form by ID
      *
-     * @param $id
+     * @since 3.0.0
+     *
+     * @param  int  $id
      *
      * @return DonationForm|null
      */
     public static function find($id)
     {
-        return give()->donationForms->getById($id);
+        return give(DonationFormRepository::class)->getById($id);
     }
 
     /**
-     * @since 2.24.0
+     * @since 3.0.0
+     *
+     * @param  array  $attributes
+     *
+     * @return DonationForm
+     * @throws Exception
+     */
+    public static function create(array $attributes): DonationForm
+    {
+        $donationForm = new static($attributes);
+
+        give(DonationFormRepository::class)->insert($donationForm);
+
+        return $donationForm;
+    }
+
+    /**
+     * @since 3.0.0
+     *
+     * @return void
+     *
+     * @throws Exception|InvalidArgumentException
+     */
+    public function save()
+    {
+        if (!$this->id) {
+            give(DonationFormRepository::class)->insert($this);
+        } else {
+            give(DonationFormRepository::class)->update($this);
+        }
+    }
+
+    /**
+     * @since 3.0.0
+     *
+     * @throws Exception
+     */
+    public function delete(): bool
+    {
+        return give(DonationFormRepository::class)->delete($this);
+    }
+
+    /**
+     * @since 3.0.0
      *
      * @return ModelQueryBuilder<DonationForm>
      */
     public static function query(): ModelQueryBuilder
     {
-        return give()->donationForms->prepareQuery();
+        return give(DonationFormRepository::class)->prepareQuery();
     }
 
     /**
-     * @since 2.24.0
+     * @since 3.0.0
      *
-     * @param object $object
-     *
-     * @return DonationForm
+     * @param  object  $object
      */
     public static function fromQueryBuilderObject($object): DonationForm
     {
-        return DonationFormQueryData::fromObject($object)->toDonationForm();
+        return (new ConvertQueryDataToDonationForm())($object);
+    }
+
+    /**
+     *
+     * @since 3.0.0
+     * @throws NameCollisionException
+     */
+    public function schema(): Form
+    {
+        return give(DonationFormRepository::class)->getFormSchemaFromBlocks($this->id, $this->blocks);
     }
 }

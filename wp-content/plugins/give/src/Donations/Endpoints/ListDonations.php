@@ -8,9 +8,13 @@ use Give\Donations\ValueObjects\DonationMode;
 use Give\Framework\Database\DB;
 use Give\Framework\ListTable\Exceptions\ColumnIdCollisionException;
 use Give\Framework\QueryBuilder\QueryBuilder;
+use Give\Framework\QueryBuilder\Types\Operator;
 use WP_REST_Request;
 use WP_REST_Response;
 
+/**
+ * @since 3.4.0 The class is extendable
+ */
 class ListDonations extends Endpoint
 {
     /**
@@ -27,6 +31,15 @@ class ListDonations extends Endpoint
      * @var DonationsListTable
      */
     protected $listTable;
+
+    /**
+     * @since 3.4.0
+     * @access public
+     */
+    public function __construct(DonationsListTable $listTable)
+    {
+        $this->listTable = $listTable;
+    }
 
     /**
      * @inheritDoc
@@ -129,7 +142,6 @@ class ListDonations extends Endpoint
     public function handleRequest(WP_REST_Request $request): WP_REST_Response
     {
         $this->request = $request;
-        $this->listTable = give(DonationsListTable::class);
 
         $donations = $this->getDonations();
         $donationsCount = $this->getTotalDonationsCount();
@@ -208,6 +220,8 @@ class ListDonations extends Endpoint
     }
 
     /**
+     * @since 3.4.0 Make this method protected so it can be extended
+     * @since 3.2.0 Updated query to account for possible null and empty values for _give_payment_mode meta
      * @since 2.24.0 Remove joins as it uses ModelQueryBuilder and change clauses to use attach_meta
      * @since      2.21.0
      *
@@ -215,7 +229,7 @@ class ListDonations extends Endpoint
      *
      * @return array{0: QueryBuilder, 1: array<DonationMetaKeys>}
      */
-    private function getWhereConditions(QueryBuilder $query): array
+    protected function getWhereConditions(QueryBuilder $query): array
     {
         $search = $this->request->get_param('search');
         $start = $this->request->get_param('start');
@@ -275,9 +289,12 @@ class ListDonations extends Endpoint
         }
 
         if ($hasWhereConditions) {
-            $query->having('give_donationmeta_attach_meta_mode.meta_value', '=', $testMode ? DonationMode::TEST : DonationMode::LIVE);
+           $query->havingRaw('HAVING COALESCE(give_donationmeta_attach_meta_mode.meta_value, %s) = %s', DonationMode::LIVE, $testMode ? DonationMode::TEST : DonationMode::LIVE);
+        } elseif ($testMode) {
+            $query->where('give_donationmeta_attach_meta_mode.meta_value', DonationMode::TEST);
         } else {
-            $query->where('give_donationmeta_attach_meta_mode.meta_value', $testMode ? DonationMode::TEST : DonationMode::LIVE);
+            $query->whereIsNull('give_donationmeta_attach_meta_mode.meta_value')
+            ->orWhere('give_donationmeta_attach_meta_mode.meta_value', DonationMode::TEST, '<>');
         }
 
         return [

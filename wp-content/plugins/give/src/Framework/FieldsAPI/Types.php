@@ -11,7 +11,6 @@ use ReflectionClass;
  */
 class Types
 {
-
     const CHECKBOX = Checkbox::TYPE;
     const DATE = Date::TYPE;
     const EMAIL = Email::TYPE;
@@ -34,7 +33,7 @@ class Types
      *
      * @return string[]
      */
-    public static function all()
+    public static function all(): array
     {
         $reflection = new ReflectionClass(static::class);
 

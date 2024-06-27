@@ -6,6 +6,7 @@ import {Spinner} from '../../index';
 import {BulkActionCheckboxAll} from '@givewp/components/ListTable/BulkActions/BulkActionCheckbox';
 import ListTableHeaders from '@givewp/components/ListTable/ListTableHeaders';
 import ListTableRows from '@givewp/components/ListTable/ListTableRows';
+import {ColumnFilterConfig} from '@givewp/components/ListTable/ListTablePage';
 
 export interface ListTableProps {
     //required
@@ -24,6 +25,9 @@ export interface ListTableProps {
     isLoading?: Boolean;
     align?: 'start' | 'center' | 'end';
     testMode?: boolean;
+    listTableBlankSlate: JSX.Element;
+    productRecommendation?: JSX.Element;
+    columnFilters?: Array<ColumnFilterConfig>;
 }
 
 export interface ListTableColumn {
@@ -34,6 +38,10 @@ export interface ListTableColumn {
     label: string;
 }
 
+/**
+ * Updated to replace the static message when no results are found with the blank slate design.
+ * @since 2.27.0
+ */
 export const ListTable = ({
     singleName = __('item', 'give'),
     pluralName = __('items', 'give'),
@@ -48,6 +56,9 @@ export const ListTable = ({
     setSortDirectionForColumn,
     sortField,
     testMode,
+    listTableBlankSlate,
+    productRecommendation,
+    columnFilters = [],
 }: ListTableProps) => {
     const [updateErrors, setUpdateErrors] = useState<{errors: Array<number>; successes: Array<number>}>({
         errors: [],
@@ -126,7 +137,7 @@ export const ListTable = ({
                 >
                     {loadingOverlay && (
                         <div className={cx(styles.overlay, loadingOverlay)}>
-                            <div className={isScrollable() && styles.relativeContainer}>
+                            <div className={cx(isScrollable() && styles.relativeContainer)}>
                                 <div className={styles.fixedContent}>
                                     <Spinner size={'medium'} />
                                 </div>
@@ -178,6 +189,7 @@ export const ListTable = ({
                             </tr>
                         </thead>
                         <tbody className={styles.tableContent}>
+                            {productRecommendation}
                             <ListTableRows
                                 columns={visibleColumns}
                                 data={data}
@@ -186,6 +198,7 @@ export const ListTable = ({
                                 rowActions={rowActions}
                                 parameters={parameters}
                                 setUpdateErrors={setUpdateErrors}
+                                columnFilters={columnFilters}
                             />
                         </tbody>
                     </table>
@@ -230,7 +243,7 @@ export const ListTable = ({
                     <div id="giveListTableMessage">
                         {isEmpty && (
                             <div role="status" className={styles.statusMessage}>
-                                {sprintf(__('No %s found.', 'give'), pluralName)}
+                                {listTableBlankSlate}
                             </div>
                         )}
                         {error && (

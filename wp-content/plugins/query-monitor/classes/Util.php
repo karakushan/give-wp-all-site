@@ -309,6 +309,27 @@ class QM_Util {
 				break;
 		}
 
+		if ( 'other' === $type ) {
+			if ( ! function_exists( '_get_dropins' ) ) {
+				require_once trailingslashit( constant( 'ABSPATH' ) ) . 'wp-admin/includes/plugin.php';
+			}
+
+			/** @var array<int, string> $dropins */
+			$dropins = array_keys( _get_dropins() );
+
+			foreach ( $dropins as $dropin ) {
+				$dropin_path = trailingslashit( constant( 'WP_CONTENT_DIR' ) ) . $dropin;
+
+				if ( $file !== $dropin_path ) {
+					continue;
+				}
+
+				$type = 'dropin';
+				/* translators: %s: Drop-in plugin file name */
+				$name = sprintf( __( 'Drop-in: %s', 'query-monitor' ), pathinfo( $dropin, PATHINFO_BASENAME ) );
+			}
+		}
+
 		$component = new QM_Component();
 		$component->type = $type;
 		$component->name = $name;
@@ -323,8 +344,6 @@ class QM_Util {
 	 * @param array<string, mixed> $callback
 	 * @return array<string, mixed>
 	 * @phpstan-return array{
-	 *   function: mixed,
-	 *   class?: object,
 	 *   name?: string,
 	 *   file?: string|false,
 	 *   line?: string|false,
@@ -424,6 +443,8 @@ class QM_Util {
 
 		}
 
+		unset( $callback['function'], $callback['class'] );
+
 		return $callback;
 
 	}
@@ -466,24 +487,7 @@ class QM_Util {
 	 * @return bool
 	 */
 	public static function is_multi_network() {
-		global $wpdb;
-
-		if ( function_exists( 'is_multi_network' ) ) {
-			return is_multi_network();
-		}
-
-		if ( ! is_multisite() ) {
-			return false;
-		}
-
-		// phpcs:disable
-		$num_sites = $wpdb->get_var( "
-			SELECT COUNT(*)
-			FROM {$wpdb->site}
-		" );
-		// phpcs:enable
-
-		return ( $num_sites > 1 );
+		return ( function_exists( 'is_multi_network' ) && is_multi_network() );
 	}
 
 	/**
@@ -539,6 +543,8 @@ class QM_Util {
 	public static function display_variable( $value ) {
 		if ( is_string( $value ) ) {
 			return $value;
+		} elseif ( $value === null ) {
+			return 'null';
 		} elseif ( is_bool( $value ) ) {
 			return ( $value ) ? 'true' : 'false';
 		} elseif ( is_scalar( $value ) ) {
@@ -636,16 +642,18 @@ class QM_Util {
 	}
 
 	/**
-	 * Returns the site editor URL for a given template part name.
+	 * Returns the site editor URL for a given template or template part name.
 	 *
-	 * @param string $template_part The site template part name, for example `twentytwentytwo//header-small-dark`.
-	 * @return string The admin URL for editing the site template part.
+	 * @param string $template The site template name, for example `twentytwentytwo//header-small-dark`.
+	 * @param string $type     The template type, either 'wp_template_part' or 'wp_template'.
+	 * @return string The admin URL for editing the site template.
 	 */
-	public static function get_site_editor_url( string $template_part ): string {
+	public static function get_site_editor_url( string $template, string $type = 'wp_template_part' ): string {
 		return add_query_arg(
 			array(
-				'postType' => 'wp_template_part',
-				'postId' => urlencode( $template_part ),
+				'postType' => $type,
+				'postId' => urlencode( $template ),
+				'canvas' => 'edit',
 			),
 			admin_url( 'site-editor.php' )
 		);

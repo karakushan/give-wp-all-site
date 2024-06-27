@@ -2,7 +2,7 @@
 /**
  * @license GPL-2.0-or-later
  *
- * Modified by impress-org on 20-January-2023 using Strauss.
+ * Modified by impress-org on 26-June-2024 using Strauss.
  * @see https://github.com/BrianHenryIE/strauss
  */
 
@@ -18,7 +18,7 @@ use Give\Vendors\StellarWP\Validation\ValidationRuleSet;
  * Apply this trait to a class to enable it to have validation rules. These rules may be passed to the front-end
  * or used with the Validator to validate data.
  *
- * @unreleased
+ * @since 1.0.0
  */
 trait HasValidationRules
 {
@@ -28,7 +28,7 @@ trait HasValidationRules
     protected $validationRules;
 
     /**
-     * @unreleased
+     * @since 1.0.0
      */
     public function __construct()
     {
@@ -36,7 +36,9 @@ trait HasValidationRules
     }
 
     /**
-     * @unreleased
+     * @see ValidationRuleSet::rules()
+     *
+     * @since 1.0.0
      */
     public function rules(...$rules): self
     {
@@ -46,7 +48,9 @@ trait HasValidationRules
     }
 
     /**
-     * @unreleased
+     * @see ValidationRuleSet::hasRule()
+     *
+     * @since 1.0.0
      */
     public function hasRule(string $ruleId): bool
     {
@@ -54,7 +58,19 @@ trait HasValidationRules
     }
 
     /**
-     * @unreleased
+     * @see ValidationRuleSet::hasRules()
+     *
+     * @since 1.3.1
+     */
+    public function hasRules(): bool
+    {
+        return $this->validationRules->hasRules();
+    }
+
+    /**
+     * @see ValidationRuleSet::getRule()
+     *
+     * @since 1.0.0
      */
     public function getRule(string $ruleId): ValidationRule
     {
@@ -62,7 +78,39 @@ trait HasValidationRules
     }
 
     /**
-     * @unreleased
+     * @see ValidationRuleSet::replaceRule()
+     *
+     * @since 1.3.1
+     */
+    public function replaceRule(string $ruleId, $rule): bool
+    {
+        return $this->validationRules->replaceRule($ruleId, $rule);
+    }
+
+    /**
+     * @see ValidationRuleSet::replaceOrAppendRule()
+     *
+     * @since 1.3.1
+     */
+    public function replaceOrAppendRule(string $ruleId, $rule): bool
+    {
+        return $this->validationRules->replaceOrAppendRule($ruleId, $rule);
+    }
+
+    /**
+     * @see ValidationRuleSet::replaceOrPrependRule()
+     *
+     * @since 1.3.1
+     */
+    public function replaceOrPrependRule(string $ruleId, $rule): bool
+    {
+        return $this->validationRules->replaceOrPrependRule($ruleId, $rule);
+    }
+
+    /**
+     * @see ValidationRuleSet::forgetRule()
+     *
+     * @since 1.0.0
      */
     public function forgetRule(string $ruleId): self
     {
@@ -72,7 +120,7 @@ trait HasValidationRules
     }
 
     /**
-     * @unreleased
+     * @since 1.0.0
      */
     public function getValidationRules(): ValidationRuleSet
     {

@@ -11,12 +11,12 @@ if( !defined('ABSPATH') ) {
 	exit;
 }
 
-class WCL_Setup extends WBCR\Factory_Templates_109\Pages\Setup {
+class WCL_Setup extends WBCR\Factory_Templates_127\Pages\Setup {
 
 	/**
-	 * @param \Wbcr_Factory460_Plugin $plugin
+	 * @param \Wbcr_Factory474_Plugin $plugin
 	 */
-	public function __construct(\Wbcr_Factory460_Plugin $plugin)
+	public function __construct(\Wbcr_Factory474_Plugin $plugin)
 	{
 		parent::__construct($plugin);
 
@@ -53,7 +53,7 @@ class WCL_Setup extends WBCR\Factory_Templates_109\Pages\Setup {
 	 *
 	 * @return void
 	 * @since 1.0.0
-	 * @see   FactoryPages460_AdminPage
+	 * @see   FactoryPages474_AdminPage
 	 *
 	 */
 	public function assets($scripts, $styles)

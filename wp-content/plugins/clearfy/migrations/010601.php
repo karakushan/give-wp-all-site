@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class WCLUpdate010601 extends Wbcr_Factory460_Update {
+class WCLUpdate010601 extends Wbcr_Factory474_Update {
 
 	public function install() {
 		$this->plugin->updatePopulateOption( "last_check_premium_update_time", 0 );

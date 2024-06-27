@@ -5,7 +5,6 @@ namespace Give\Framework\PaymentGateways;
 use Give\Container\Container;
 use Give\Framework\Exceptions\Primitives\Exception;
 use Give\Framework\Exceptions\Primitives\InvalidArgumentException;
-use Give\Framework\LegacyPaymentGateways\Adapters\LegacyPaymentGatewayRegisterAdapter;
 use Give\Framework\PaymentGateways\Contracts\PaymentGatewaysIterator;
 use Give\Framework\PaymentGateways\Exceptions\OverflowException;
 
@@ -14,30 +13,37 @@ use Give\Framework\PaymentGateways\Exceptions\OverflowException;
  */
 class PaymentGatewayRegister extends PaymentGatewaysIterator
 {
+    /**
+     * @var string[]
+     */
     protected $gateways = [];
 
     /**
      * Get Gateways
      *
+     * @since 2.30.0 added $supportedFormVersion param to filter gateways by supported form version
      * @since 2.18.0
-     *
-     * @return array
      */
-    public function getPaymentGateways()
+    public function getPaymentGateways(int $supportedFormVersion = null): array
     {
-        return $this->gateways;
+        if (!$supportedFormVersion) {
+            return $this->gateways;
+        }
+
+        return array_filter($this->gateways, static function (string $gatewayClass) use ($supportedFormVersion) {
+            /** @var PaymentGateway $gateway */
+            $gateway = give($gatewayClass);
+
+            return in_array($supportedFormVersion, $gateway->supportsFormVersions(), true);
+        });
     }
 
     /**
      * Get Gateway
      *
      * @since 2.18.0
-     *
-     * @param string $id
-     *
-     * @return PaymentGateway
      */
-    public function getPaymentGateway($id)
+    public function getPaymentGateway(string $id): PaymentGateway
     {
         if (!$this->hasPaymentGateway($id)) {
             throw new InvalidArgumentException("No gateway exists with the ID {$id}");
@@ -51,12 +57,8 @@ class PaymentGatewayRegister extends PaymentGatewaysIterator
 
     /**
      * @since 2.18.0
-     *
-     * @param string $id
-     *
-     * @return bool
      */
-    public function hasPaymentGateway($id)
+    public function hasPaymentGateway(string $id): bool
     {
         return isset($this->gateways[$id]);
     }
@@ -66,11 +68,9 @@ class PaymentGatewayRegister extends PaymentGatewaysIterator
      *
      * @since 2.18.0
      *
-     * @param string $gatewayClass
-     *
      * @throws OverflowException|InvalidArgumentException|Exception
      */
-    public function registerGateway($gatewayClass)
+    public function registerGateway(string $gatewayClass)
     {
         if (!is_subclass_of($gatewayClass, PaymentGateway::class)) {
             throw new InvalidArgumentException(
@@ -88,11 +88,11 @@ class PaymentGatewayRegister extends PaymentGatewaysIterator
             throw new OverflowException("Cannot register a gateway with an id that already exists: $gatewayId");
         }
 
+
         $this->gateways[$gatewayId] = $gatewayClass;
 
-        $this->registerGatewayWithServiceContainer($gatewayClass, $gatewayId);
 
-        $this->afterGatewayRegister($gatewayClass);
+        $this->registerGatewayWithServiceContainer($gatewayClass, $gatewayId);
     }
 
     /**
@@ -116,30 +116,14 @@ class PaymentGatewayRegister extends PaymentGatewaysIterator
      *
      * @since 2.18.0
      *
-     * @param string $gatewayClass
-     * @param string $gatewayId
-     *
      * @return void
      */
-    private function registerGatewayWithServiceContainer($gatewayClass, $gatewayId)
+    private function registerGatewayWithServiceContainer(string $gatewayClass, string $gatewayId)
     {
         give()->singleton($gatewayClass, function (Container $container) use ($gatewayClass, $gatewayId) {
             $subscriptionModule = apply_filters("givewp_gateway_{$gatewayId}_subscription_module", null);
 
             return new $gatewayClass($subscriptionModule ? $container->make($subscriptionModule) : null);
         });
-    }
-
-    /**
-     * After gateway is registered, connect to legacy payment gateway adapter
-     *
-     * @param string $gatewayClass
-     */
-    private function afterGatewayRegister($gatewayClass)
-    {
-        /** @var LegacyPaymentGatewayRegisterAdapter $legacyPaymentGatewayRegisterAdapter */
-        $legacyPaymentGatewayRegisterAdapter = give(LegacyPaymentGatewayRegisterAdapter::class);
-
-        $legacyPaymentGatewayRegisterAdapter->connectGatewayToLegacyPaymentGatewayAdapter($gatewayClass);
     }
 }

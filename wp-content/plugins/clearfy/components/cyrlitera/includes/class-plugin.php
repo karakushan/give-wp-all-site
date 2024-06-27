@@ -10,11 +10,11 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @author        Alexander Kovalev <alex.kovalevv@gmail.com>, Github: https://github.com/alexkovalevv
  * @copyright (c) 19.02.2018, Webcraftic
  */
-class WCTR_Plugin extends Wbcr_Factory460_Plugin {
+class WCTR_Plugin extends Wbcr_Factory474_Plugin {
 
 	/**
 	 * @see self::app()
-	 * @var Wbcr_Factory460_Plugin
+	 * @var Wbcr_Factory474_Plugin
 	 */
 	private static $app;
 
@@ -57,7 +57,7 @@ class WCTR_Plugin extends Wbcr_Factory460_Plugin {
 	 * Используется для получения настроек плагина, информации о плагине, для доступа к вспомогательным
 	 * классам.
 	 *
-	 * @return \Wbcr_Factory460_Plugin|\WCTR_Plugin
+	 * @return \Wbcr_Factory474_Plugin|\WCTR_Plugin
 	 */
 	public static function app() {
 		return self::$app;

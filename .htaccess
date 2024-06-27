@@ -1,8 +1,8 @@
 
 # BEGIN WordPress
-# Директиви (рядки) між `BEGIN WordPress` і `END WordPress`
-# створені автоматично і підлягають змінам тільки через фільтри WordPress.
-# Зміни зроблені вручну між цими маркерами будуть перезаписані.
+# Директивы (строки) между `BEGIN WordPress` и `END WordPress`
+# созданы автоматически и подлежат изменению только через фильтры WordPress.
+# Сделанные вручную изменения между этими маркерами будут перезаписаны.
 <IfModule mod_rewrite.c>
 RewriteEngine On
 RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]

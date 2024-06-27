@@ -2,87 +2,75 @@
 
 namespace Give\DonationForms\DataTransferObjects;
 
-use DateTime;
+use DateTimeInterface;
 use Give\DonationForms\Models\DonationForm;
-use Give\DonationForms\Properties\DonationFormLevel;
 use Give\DonationForms\ValueObjects\DonationFormMetaKeys;
 use Give\DonationForms\ValueObjects\DonationFormStatus;
+use Give\Framework\Blocks\BlockCollection;
 use Give\Framework\Support\Facades\DateTime\Temporal;
-use Give\Framework\Support\ValueObjects\Money;
 
-/**
- * Class DonationFormQueryData
- *
- * @since 2.24.0
- */
-final class DonationFormQueryData
+class DonationFormQueryData
 {
-
     /**
      * @var int
      */
     public $id;
+
     /**
      * @var string
      */
     public $title;
+
     /**
-     * @var DonationFormLevel[]
+     * @var array
      */
-    public $levels;
+    public $settings;
+
     /**
-     * @var boolean
-     */
-    public $goalOption;
-    /**
-     * @var int
-     */
-    public $totalNumberOfDonations;
-    /**
-     * @var Money
-     */
-    public $totalAmountDonated;
-    /**
-     * @var DateTime
+     * @var DateTimeInterface
      */
     public $createdAt;
+
     /**
-     * @var DateTime
+     * @var DateTimeInterface
      */
     public $updatedAt;
+
     /**
-     * @var string
+     * @var DonationFormStatus
      */
     public $status;
 
     /**
-     * Convert data from donation form object to DonationForm Model
+     * @var BlockCollection
+     */
+    public $blocks;
+
+    /**
+     * Convert data from object to Donation Form
      *
-     * @since 2.24.0
+     * @since 3.0.0
      *
-     * @param $object
+     * @param  object  $queryObject
      *
      * @return DonationFormQueryData
      */
-    public static function fromObject($object): DonationFormQueryData
+    public static function fromObject($queryObject): self
     {
-        $self = new static();
-
-        $self->id = (int)$object->id;
-        $self->title = $object->title;
-        $self->levels = $self->getDonationFormLevels($object);
-        $self->goalOption = ($object->{DonationFormMetaKeys::GOAL_OPTION()->getKeyAsCamelCase()} === 'enabled');
-        $self->createdAt = Temporal::toDateTime($object->createdAt);
-        $self->updatedAt = Temporal::toDateTime($object->updatedAt);
-        $self->totalAmountDonated = Money::fromDecimal($object->{DonationFormMetaKeys::FORM_EARNINGS()->getKeyAsCamelCase()}, give_get_currency());
-        $self->totalNumberOfDonations = (int)$object->{DonationFormMetaKeys::FORM_SALES()->getKeyAsCamelCase()};
-        $self->status = new DonationFormStatus($object->status);
+        $self = new self();
+        $self->id = (int)$queryObject->id;
+        $self->title = $queryObject->title;
+        $self->createdAt = Temporal::toDateTime($queryObject->createdAt);
+        $self->updatedAt = Temporal::toDateTime($queryObject->updatedAt);
+        $self->status = new DonationFormStatus($queryObject->status);
+        $self->settings = json_decode($queryObject->{DonationFormMetaKeys::SETTINGS()->getKeyAsCamelCase()}, true);
+        $self->blocks = BlockCollection::fromJson($queryObject->blocks);
 
         return $self;
     }
 
     /**
-     * Convert DTO to DonationForm
+     * Convert DTO to Donation Form
      *
      * @return DonationForm
      */
@@ -91,40 +79,5 @@ final class DonationFormQueryData
         $attributes = get_object_vars($this);
 
         return new DonationForm($attributes);
-    }
-
-    /**
-     * @since 2.24.0
-     *
-     * @param $object
-     *
-     * @return DonationFormLevel[]
-     */
-    public function getDonationFormLevels($object): array
-    {
-        switch( $object->{DonationFormMetaKeys::PRICE_OPTION()->getKeyAsCamelCase()} ) {
-            case 'multi':
-                $levels = maybe_unserialize($object->{DonationFormMetaKeys::DONATION_LEVELS()->getKeyAsCamelCase()});
-
-                if (empty($levels)) {
-                    return [];
-                }
-
-                return array_map(static function ($level) {
-                    return DonationFormLevel::fromArray($level);
-                }, $levels);
-            case 'set':
-                $amount = $object->{DonationFormMetaKeys::SET_PRICE()->getKeyAsCamelCase()};
-
-                if (empty($amount)) {
-                    return [];
-                }
-
-                return [
-                    DonationFormLevel::fromPrice($amount),
-                ];
-            default:
-                return [];
-        }
     }
 }

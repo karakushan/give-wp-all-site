@@ -15,6 +15,7 @@ use Give\Framework\Support\ValueObjects\Money;
 /**
  * Class DonationData
  *
+ * @since 3.2.0 added honorific property
  * @since 2.23.0 remove parentId property
  * @since 2.19.6
  */
@@ -48,6 +49,10 @@ final class DonationQueryData
      * @var string
      */
     public $email;
+    /**
+     * @var string
+     */
+    public $phone;
     /**
      * @var int
      */
@@ -116,27 +121,36 @@ final class DonationQueryData
      * @var string|null
      */
     public $company;
+    /**
+     * @var string|null
+     */
+    public $comment;
+    /**
+     * @var string|null
+     */
+    public $honorific;
 
     /**
      * Convert data from object to Donation
      *
-     * @param object $donationQueryObject
-     *
-     * @return self
+     * @since 3.9.0 Add support for "phone" property
+     * @since 3.2.0 add fallback for donation mode
+     * @since 2.23.0 remove parentId property
+     * @since 2.22.0 add support for company field
      * @since 2.20.0 update for new amount property, fee amount recovered, and exchange rate
      * @since 2.19.6
      *
-     * @since 2.23.0 remove parentId property
-     * @since 2.22.0 add support for company field
+     * @param object $donationQueryObject
+     *
+     * @return self
      */
     public static function fromObject($donationQueryObject): self
     {
         $self = new static();
 
-
         $currency = $donationQueryObject->{DonationMetaKeys::CURRENCY()->getKeyAsCamelCase()};
-
         $feeAmountRecovered = $donationQueryObject->{DonationMetaKeys::FEE_AMOUNT_RECOVERED()->getKeyAsCamelCase()};
+        $donationMode = $donationQueryObject->{DonationMetaKeys::MODE()->getKeyAsCamelCase()};
 
         $self->id = (int)$donationQueryObject->id;
         $self->formId = (int)$donationQueryObject->{DonationMetaKeys::FORM_ID()->getKeyAsCamelCase()};
@@ -148,15 +162,17 @@ final class DonationQueryData
         $self->feeAmountRecovered = $feeAmountRecovered ? Money::fromDecimal($feeAmountRecovered, $currency) : null;
         $self->exchangeRate = $donationQueryObject->{DonationMetaKeys::EXCHANGE_RATE()->getKeyAsCamelCase()};
         $self->donorId = (int)$donationQueryObject->{DonationMetaKeys::DONOR_ID()->getKeyAsCamelCase()};
+        $self->honorific = $donationQueryObject->{DonationMetaKeys::HONORIFIC()->getKeyAsCamelCase()};
         $self->firstName = $donationQueryObject->{DonationMetaKeys::FIRST_NAME()->getKeyAsCamelCase()};
         $self->lastName = $donationQueryObject->{DonationMetaKeys::LAST_NAME()->getKeyAsCamelCase()};
         $self->email = $donationQueryObject->{DonationMetaKeys::EMAIL()->getKeyAsCamelCase()};
+        $self->phone = $donationQueryObject->{DonationMetaKeys::PHONE()->getKeyAsCamelCase()};
         $self->gatewayId = $donationQueryObject->{DonationMetaKeys::GATEWAY()->getKeyAsCamelCase()};
         $self->createdAt = Temporal::toDateTime($donationQueryObject->createdAt);
         $self->updatedAt = Temporal::toDateTime($donationQueryObject->updatedAt);
         $self->status = new DonationStatus($donationQueryObject->status);
         $self->subscriptionId = (int)$donationQueryObject->{DonationMetaKeys::SUBSCRIPTION_ID()->getKeyAsCamelCase()};
-        $self->mode = new DonationMode($donationQueryObject->{DonationMetaKeys::MODE()->getKeyAsCamelCase()});
+        $self->mode = DonationMode::isValid($donationMode) ? new DonationMode($donationMode) : DonationMode::LIVE();
         $self->billingAddress = BillingAddress::fromArray([
             'country' => $donationQueryObject->{DonationMetaKeys::BILLING_COUNTRY()->getKeyAsCamelCase()},
             'city' => $donationQueryObject->{DonationMetaKeys::BILLING_CITY()->getKeyAsCamelCase()},
@@ -172,6 +188,8 @@ final class DonationQueryData
         $self->gatewayTransactionId = $donationQueryObject->{DonationMetaKeys::GATEWAY_TRANSACTION_ID()
             ->getKeyAsCamelCase()};
         $self->company = $donationQueryObject->{DonationMetaKeys::COMPANY()
+            ->getKeyAsCamelCase()};
+        $self->comment = $donationQueryObject->{DonationMetaKeys::COMMENT()
             ->getKeyAsCamelCase()};
 
         if (!empty($donationQueryObject->{DonationMetaKeys::SUBSCRIPTION_INITIAL_DONATION()->getKeyAsCamelCase()})) {

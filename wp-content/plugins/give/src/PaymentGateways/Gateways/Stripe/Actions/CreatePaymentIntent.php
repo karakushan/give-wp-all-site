@@ -27,6 +27,8 @@ class CreatePaymentIntent
     }
 
     /**
+     * @since 3.5.0 remove descriptor as Stripe automatically adds it, per Stripe API changes (https://support.stripe.com/questions/use-of-the-statement-descriptor-parameter-on-paymentintents-for-card-charges)
+     * @since 2.33.0 no longer store the payment intent secret
      * @since 2.19.0
      *
      * @throws InvalidPropertyName
@@ -49,7 +51,6 @@ class CreatePaymentIntent
                 'amount' => $donation->amount->formatToMinorAmount(),
                 'currency' => $donation->amount->getCurrency(),
                 'payment_method_types' => ['card'],
-                'statement_descriptor' => give_stripe_get_statement_descriptor(),
                 'description' => $donationSummary->getSummaryWithDonor(),
                 'metadata' => give_stripe_prepare_metadata($donation->id),
                 'customer' => $giveStripeCustomer->get_id(),
@@ -70,17 +71,6 @@ class CreatePaymentIntent
             'donationId' => $donation->id,
             'content' => sprintf(__('Stripe Charge/Payment Intent ID: %s', 'give'), $intent->id())
         ]);
-
-        DonationNote::create([
-            'donationId' => $donation->id,
-            'content' => sprintf(__('Stripe Payment Intent Client Secret: %s', 'give'), $intent->clientSecret())
-        ]);
-
-        give_update_meta(
-            $donation->id,
-            '_give_stripe_payment_intent_client_secret',
-            $intent->clientSecret()
-        );
 
         if ('requires_action' === $intent->status()) {
             DonationNote::create([

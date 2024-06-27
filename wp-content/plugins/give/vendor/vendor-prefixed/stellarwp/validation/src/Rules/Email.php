@@ -2,7 +2,7 @@
 /**
  * @license GPL-2.0-or-later
  *
- * Modified by impress-org on 20-January-2023 using Strauss.
+ * Modified by impress-org on 26-June-2024 using Strauss.
  * @see https://github.com/BrianHenryIE/strauss
  */
 
@@ -15,14 +15,14 @@ use Give\Vendors\StellarWP\Validation\Contracts\ValidatesOnFrontEnd;
 use Give\Vendors\StellarWP\Validation\Contracts\ValidationRule;
 
 /**
- * @unreleased
+ * @since 1.0.0
  */
 class Email implements ValidationRule, ValidatesOnFrontEnd
 {
     /**
      * @inheritDoc
      *
-     * @unreleased
+     * @since 1.0.0
      */
     public static function id(): string
     {
@@ -32,7 +32,7 @@ class Email implements ValidationRule, ValidatesOnFrontEnd
     /**
      * @inheritDoc
      *
-     * @unreleased
+     * @since 1.0.0
      */
     public static function fromString(string $options = null): ValidationRule
     {
@@ -50,7 +50,7 @@ class Email implements ValidationRule, ValidatesOnFrontEnd
     /**
      * @inheritDoc
      *
-     * @unreleased
+     * @since 1.0.0
      */
     public function __invoke($value, Closure $fail, string $key, array $values)
     {

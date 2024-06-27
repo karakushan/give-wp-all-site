@@ -50,6 +50,7 @@ abstract class QM_Output_Html_Assets extends QM_Output_Html {
 			// @TODO translator comments or context:
 			'missing' => __( 'Missing', 'query-monitor' ),
 			'broken' => __( 'Missing Dependencies', 'query-monitor' ),
+			'modules' => __( 'Module', 'query-monitor' ),
 			'header' => __( 'Header', 'query-monitor' ),
 			'footer' => __( 'Footer', 'query-monitor' ),
 		);
@@ -69,7 +70,7 @@ abstract class QM_Output_Html_Assets extends QM_Output_Html {
 		echo '<th scope="col" class="qm-filterable-column">';
 		$args = array(
 			'prepend' => array(
-				'local' => $data->host,
+				'local' => $data->full_host,
 			),
 		);
 		echo $this->build_filter( $type . '-host', $hosts, __( 'Host', 'query-monitor' ), $args ); // WPCS: XSS ok.
@@ -183,14 +184,14 @@ abstract class QM_Output_Html_Assets extends QM_Output_Html {
 
 		$host = implode( '.', $parts );
 
-		if ( ! empty( $asset['port'] ) ) {
+		if ( ! empty( $asset['port'] ) && ! empty( $asset['host'] ) ) {
 			$host = "{$host}:{$asset['port']}";
 		}
 
 		echo '<td class="qm-nowrap qm-ltr">' . esc_html( $handle ) . '</td>';
 		echo '<td class="qm-nowrap qm-ltr">' . esc_html( $host ) . '</td>';
 		echo '<td class="qm-ltr">';
-		if ( is_wp_error( $asset['source'] ) ) {
+		if ( $asset['source'] instanceof WP_Error ) {
 			$error_data = $asset['source']->get_error_data();
 			if ( $error_data && isset( $error_data['src'] ) ) {
 				printf(

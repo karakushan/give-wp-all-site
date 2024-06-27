@@ -13,7 +13,7 @@ if( !defined('ABSPATH') ) {
 	exit;
 }
 
-class WCL_ComponentsPage extends \WBCR\Factory_Templates_109\Pages\Components {
+class WCL_ComponentsPage extends \WBCR\Factory_Templates_127\Pages\Components {
 
 	public function get_components()
 	{
@@ -38,7 +38,7 @@ class WCL_ComponentsPage extends \WBCR\Factory_Templates_109\Pages\Components {
 				'type' => 'internal',
 				'build' => 'premium',
 				'url' => 'http://clearfy.pro/hide-my-wp/',
-				'icon' => '//s3-us-west-2.amazonaws.com/freemius/plugins/2318/icons/db36219969de82e3d07042cc03eb53b0.png',
+				'icon' => $default_image,
 				'description' => __('You can protect your WP by preventing the hacker from knowing which CMS, plugins, themes you use. It disables identification of your CMS.', 'clearfy')
 			],
 			[

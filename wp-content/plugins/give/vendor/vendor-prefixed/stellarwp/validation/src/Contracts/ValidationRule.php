@@ -2,7 +2,7 @@
 /**
  * @license GPL-2.0-or-later
  *
- * Modified by impress-org on 20-January-2023 using Strauss.
+ * Modified by impress-org on 26-June-2024 using Strauss.
  * @see https://github.com/BrianHenryIE/strauss
  */
 
@@ -11,13 +11,15 @@ declare(strict_types=1);
 namespace Give\Vendors\StellarWP\Validation\Contracts;
 
 use Closure;
+use Give\Vendors\StellarWP\Validation\Commands\ExcludeValue;
+use Give\Vendors\StellarWP\Validation\Commands\SkipValidationRules;
 
 interface ValidationRule
 {
     /**
      * The unique id of the validation rule.
      *
-     * @unreleased
+     * @since 1.0.0
      */
     public static function id(): string;
 
@@ -27,7 +29,7 @@ interface ValidationRule
      *
      * If a value is provided after the colon, it will be the options' parameter.
      *
-     * @unreleased
+     * @since 1.0.0
      */
     public static function fromString(string $options = null): ValidationRule;
 
@@ -35,9 +37,10 @@ interface ValidationRule
      * The invokable method used to validate the value. If the value is invalid, the fail callback should be invoked
      * with the error message. Use {field} to reference the field name in the error message.
      *
-     * @unreleased
+     * @since 1.2.0 add ExcludeValue return option
+     * @since 1.0.0
      *
-     * @return void
+     * @return void|ExcludeValue|SkipValidationRules
      */
     public function __invoke($value, Closure $fail, string $key, array $values);
 }

@@ -50,7 +50,7 @@ class SEPAGateway extends PaymentGateway
      * @since 2.19.7 fix handlePaymentIntentStatus not receiving extra param
      * @since 2.19.0
      *
-     * @param array{stripePaymentMethod: PaymentMethod} $gatewayData
+     * @param  array{stripePaymentMethod: PaymentMethod}  $gatewayData
      *
      * @return GatewayCommand
      * @throws PaymentGatewayException
@@ -115,6 +115,7 @@ class SEPAGateway extends PaymentGateway
     }
 
     /**
+     * @since 2.33.5 Use give_get_ip() instead of give_stripe_get_ip_address()
      * @since 2.19.0
      * @return array
      */
@@ -127,7 +128,7 @@ class SEPAGateway extends PaymentGateway
                 'customer_acceptance' => [
                     'type' => 'online',
                     'online' => [
-                        'ip_address' => give_stripe_get_ip_address(),
+                        'ip_address' => give_get_ip(),
                         'user_agent' => give_get_user_agent(),
                     ],
                 ],

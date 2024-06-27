@@ -25,10 +25,12 @@ class QM_Backtrace {
 		'WP_Hook' => true,
 		'Altis\Cloud\DB' => true,
 		'Yoast\WP\Lib\ORM' => true,
+		'Perflab_SQLite_DB' => true,
+		'WP_SQLite_DB' => true,
 	);
 
 	/**
-	 * @var array<string, bool>
+	 * @var array<string, array<string, bool>>
 	 */
 	protected static $ignore_method = array();
 
@@ -45,9 +47,12 @@ class QM_Backtrace {
 		'trigger_error' => true,
 		'_doing_it_wrong' => true,
 		'_deprecated_argument' => true,
+		'_deprecated_constructor' => true,
 		'_deprecated_file' => true,
 		'_deprecated_function' => true,
+		'_deprecated_hook' => true,
 		'dbDelta' => true,
+		'maybe_create_table' => true,
 	);
 
 	/**
@@ -95,9 +100,9 @@ class QM_Backtrace {
 	protected $args = array();
 
 	/**
-	 * @var mixed[]|null
+	 * @var mixed[]
 	 */
-	protected $trace = null;
+	protected $trace;
 
 	/**
 	 * @var mixed[]|null
@@ -220,7 +225,10 @@ class QM_Backtrace {
 			}
 		}
 
-		foreach ( QM_Util::get_file_dirs() as $type => $dir ) {
+		$file_dirs = QM_Util::get_file_dirs();
+		$file_dirs['dropin'] = WP_CONTENT_DIR;
+
+		foreach ( $file_dirs as $type => $dir ) {
 			if ( isset( $components[ $type ] ) ) {
 				$this->component = $components[ $type ];
 				return $this->component;
@@ -403,8 +411,8 @@ class QM_Backtrace {
 			 *
 			 * @since 2.7.0
 			 *
-			 * @param bool[] $ignore_class Array of class names to ignore. The array keys are class names to ignore,
-			 *                             the array values are whether to ignore the class or not (usually true).
+			 * @param array<string, bool> $ignore_class Array of class names to ignore. The array keys are class names to ignore,
+			 *                                          the array values are whether to ignore the class (usually true).
 			 */
 			self::$ignore_class = apply_filters( 'qm/trace/ignore_class', self::$ignore_class );
 
@@ -413,8 +421,9 @@ class QM_Backtrace {
 			 *
 			 * @since 2.7.0
 			 *
-			 * @param bool[] $ignore_method Array of method names to ignore. The array keys are method names to ignore,
-			 *                              the array values are whether to ignore the method or not (usually true).
+			 * @param array<string, array<string, bool>> $ignore_method Array of method names to ignore. The top level array keys are
+			 *                                                          class names, the second level array keys are method names, and
+			 *                                                          the array values are whether to ignore the method (usually true).
 			 */
 			self::$ignore_method = apply_filters( 'qm/trace/ignore_method', self::$ignore_method );
 
@@ -423,18 +432,18 @@ class QM_Backtrace {
 			 *
 			 * @since 2.7.0
 			 *
-			 * @param bool[] $ignore_func Array of function names to ignore. The array keys are function names to ignore,
-			 *                            the array values are whether to ignore the function or not (usually true).
+			 * @param array<string, bool> $ignore_func Array of function names to ignore. The array keys are function names to ignore,
+			 *                                         the array values are whether to ignore the function (usually true).
 			 */
 			self::$ignore_func = apply_filters( 'qm/trace/ignore_func', self::$ignore_func );
 
 			/**
 			 * Filters which action and filter names to ignore when constructing user-facing call stacks.
 			 *
-			 * @since x.x.x
+			 * @since 3.8.0
 			 *
-			 * @param bool[] $ignore_hook Array of hook names to ignore. The array keys are hook names to ignore,
-			 *                            the array values are whether to ignore the hook or not (usually true).
+			 * @param array<string, bool> $ignore_hook Array of hook names to ignore. The array keys are hook names to ignore,
+			 *                                         the array values are whether to ignore the hook (usually true).
 			 */
 			self::$ignore_hook = apply_filters( 'qm/trace/ignore_hook', self::$ignore_hook );
 
@@ -444,9 +453,9 @@ class QM_Backtrace {
 			 *
 			 * @since 2.7.0
 			 *
-			 * @param (int|string)[] $show_args The number of argument values to show for the given function name. The
-			 *                                  array keys are function names, the array values are either integers or
-			 *                                  "dir" to specifically treat the function argument as a directory path.
+			 * @param array<string,int|string> $show_args The number of argument values to show for the given function name. The
+			 *                                            array keys are function names, the array values are either integers or
+			 *                                            "dir" to specifically treat the function argument as a directory path.
 			 */
 			self::$show_args = apply_filters( 'qm/trace/show_args', self::$show_args );
 
@@ -503,7 +512,7 @@ class QM_Backtrace {
 					} else {
 						$args = array();
 						for ( $i = 0; $i < $show; $i++ ) {
-							if ( isset( $frame['args'][ $i ] ) ) {
+							if ( isset( $frame['args'] ) && array_key_exists( $i, $frame['args'] ) ) {
 								if ( is_string( $frame['args'][ $i ] ) ) {
 									$args[] = '\'' . $frame['args'][ $i ] . '\'';
 								} else {
@@ -526,6 +535,13 @@ class QM_Backtrace {
 			$return['calling_file'] = $this->calling_file;
 			$return['calling_line'] = $this->calling_line;
 
+			if ( ! isset( $return['file'] ) ) {
+				$return['file'] = $this->calling_file;
+			}
+
+			if ( ! isset( $return['line'] ) ) {
+				$return['line'] = $this->calling_line;
+			}
 		}
 
 		if ( isset( $frame['line'] ) ) {

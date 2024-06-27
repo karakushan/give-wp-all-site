@@ -31,7 +31,7 @@ if ( ! defined( 'WMAC_PLUGIN_ACTIVE' ) ) {
 	}
 
 	if ( ! defined( 'WMAC_PLUGIN_URL' ) ) {
-		define( 'WMAC_PLUGIN_URL', plugins_url( null, __FILE__ ) );
+		define( 'WMAC_PLUGIN_URL', plugins_url( '', __FILE__ ) );
 	}
 
 	try {

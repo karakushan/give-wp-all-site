@@ -2,7 +2,7 @@
 /**
  * @license GPL-2.0-or-later
  *
- * Modified by impress-org on 20-January-2023 using Strauss.
+ * Modified by impress-org on 26-June-2024 using Strauss.
  * @see https://github.com/BrianHenryIE/strauss
  */
 
@@ -10,11 +10,10 @@ declare(strict_types=1);
 
 namespace Give\Vendors\StellarWP\Validation;
 
-use StellarWP\Exceptions\Primitives\InvalidArgumentException;
 use Give\Vendors\StellarWP\Validation\Contracts\ValidationRule;
 
 /**
- * @unreleased
+ * @since 1.0.0
  */
 class ValidationRulesRegistrar
 {
@@ -24,7 +23,7 @@ class ValidationRulesRegistrar
     /**
      * Register one or many validation rules.
      *
-     * @unreleased
+     * @since 1.0.0
      */
     public function register(string ...$rules): self
     {
@@ -38,12 +37,13 @@ class ValidationRulesRegistrar
     /**
      * Register a validation rule.
      *
-     * @unreleased
+     * @since 1.2.1 switch to throwing InvalidArgumentException from Config
+     * @since 1.0.0
      */
     private function registerClass(string $class): self
     {
         if (!is_subclass_of($class, ValidationRule::class)) {
-            throw new InvalidArgumentException(
+            Config::throwInvalidArgumentException(
                 sprintf(
                     'Validation rule must implement %s',
                     ValidationRule::class
@@ -51,13 +51,15 @@ class ValidationRulesRegistrar
             );
         }
 
-        if (isset($this->rules[$class::id()])) {
-            throw new InvalidArgumentException(
-                "A validation rule with the id {$class::id()} has already been registered."
+        $classId = $class::id();
+
+        if (isset($this->rules[$classId])) {
+            Config::throwInvalidArgumentException(
+                "A validation rule with the id $classId has already been registered."
             );
         }
 
-        $this->rules[$class::id()] = $class;
+        $this->rules[$classId] = $class;
 
         return $this;
     }

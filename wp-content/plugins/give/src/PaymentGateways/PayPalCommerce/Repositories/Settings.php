@@ -2,8 +2,13 @@
 
 namespace Give\PaymentGateways\PayPalCommerce\Repositories;
 
+use Give\PaymentGateways\PayPalCommerce\Repositories\Traits\HasMode;
+use Give\PaymentGateways\PayPalCommerce\Utils;
+
 class Settings
 {
+    use HasMode;
+
     /**
      * wp_options key for the account country
      *
@@ -12,7 +17,7 @@ class Settings
     const COUNTRY_KEY = 'paypal_commerce_account_country';
 
     /**
-     * wp_options key for the access token
+     * wp_options key for the seller access token
      *
      * @since 2.9.0
      */
@@ -43,16 +48,14 @@ class Settings
      * Returns the country for the account
      *
      * @since 2.9.0
-     *
-     * @return string|null
      */
-    public function getAccountCountry()
+    public function getAccountCountry(): string
     {
-        return get_option(self::COUNTRY_KEY, give_get_country());
+        return get_option(self::COUNTRY_KEY, give_get_country()) ?? '';
     }
 
     /**
-     * Returns the account access token
+     * Returns the PayPal merchant seller access token.
      *
      * @since 2.9.0
      *
@@ -66,13 +69,14 @@ class Settings
     /**
      * Returns the account access token
      *
+     * @since 3.0.0 Set transaction type to "standard" if the country is not supported.
      * @since 2.9.0
-     *
-     * @return array|null
      */
-    public function getTransactionType()
+    public function getTransactionType(): string
     {
-        return give_get_option(self::TRANSACTION_TYPE, 'donation');
+        return Utils::isDonationTransactionTypeSupported($this->getAccountCountry())
+            ? give_get_option(self::TRANSACTION_TYPE, 'donation')
+            : 'standard';
     }
 
     /**
@@ -88,7 +92,7 @@ class Settings
     }
 
     /**
-     * Updates the account access token
+     * Updates the PayPal merchant seller access token.
      *
      * @param $token
      *
@@ -100,7 +104,9 @@ class Settings
     }
 
     /**
-     * Deletes the account access token
+     * Deletes the PayPal seller access token.
+     *
+     * @since 2.9.0
      *
      * @return bool
      */
@@ -144,6 +150,26 @@ class Settings
     }
 
     /**
+     * Updates the partner link details
+     *
+     * @since 2.25.0
+     */
+    public function updateSellerAccessToken(array $sellerAccessToken): bool
+    {
+        return update_option($this->getSellerAccessTokenOptionName(), $sellerAccessToken);
+    }
+
+    /**
+     * Updates the partner link details
+     *
+     * @since 2.25.0
+     */
+    public function deleteSellerAccessToken(): bool
+    {
+        return delete_option($this->getSellerAccessTokenOptionName());
+    }
+
+    /**
      * Deletes the partner link details
      *
      * @since 2.11.1
@@ -160,5 +186,18 @@ class Settings
     public function isTransactionTypeDonation()
     {
         return 'donation' === $this->getTransactionType();
+    }
+
+    /**
+     * This function returns the seller access token option name
+     *
+     * @since 2.25.0
+     */
+    private function getSellerAccessTokenOptionName(): string
+    {
+        return sprintf(
+            'give_paypal_commerce_%s_seller_access_token',
+            $this->getMode()
+        );
     }
 }

@@ -4,7 +4,7 @@
  * Plugin URI: https://webcraftic.com
  * Description: Old plugin name: Simple Google Analytics. To improve Google Page Speed indicators Analytics caching is needed. However, it can also slightly increase your website loading speed, because Analytics js files will load locally. The second case that you might need these settings is the usual Google Analytics connection to your website. You do not need to do this with other plugins or insert the tracking code into your theme.
  * Author: Webcraftic <wordpress.webraftic@gmail.com>
- * Version: 3.2.5
+ * Version: 3.2.7
  * Text Domain: simple-google-analytics
  * Domain Path: /languages/
  * Author URI: http://webcraftic.com
@@ -67,15 +67,15 @@ $plugin_info = array(
 
 	// FRAMEWORK MODULES
 	'load_factory_modules' => array(
-		array('libs/factory/bootstrap', 'factory_bootstrap_461', 'admin'),
-		array('libs/factory/forms', 'factory_forms_457', 'admin'),
-		array('libs/factory/pages', 'factory_pages_460', 'admin'),
-		array('libs/factory/templates', 'factory_templates_109', 'all'),
-		array('libs/factory/adverts', 'factory_adverts_137', 'admin')
+		array('libs/factory/bootstrap', 'factory_bootstrap_476', 'admin'),
+		array('libs/factory/forms', 'factory_forms_474', 'admin'),
+		array('libs/factory/pages', 'factory_pages_474', 'admin'),
+		array('libs/factory/templates', 'factory_templates_127', 'all'),
+		array('libs/factory/adverts', 'factory_adverts_152', 'admin')
 	)
 );
 
-$wga_compatibility = new Wbcr_Factory460_Requirements(__FILE__, array_merge($plugin_info, array(
+$wga_compatibility = new Wbcr_Factory474_Requirements(__FILE__, array_merge($plugin_info, array(
 	'plugin_already_activate' => defined('WGA_PLUGIN_ACTIVE'),
 	'required_php_version' => '5.4',
 	'required_wp_version' => '4.2.0',
@@ -103,7 +103,7 @@ define('WGA_PLUGIN_ACTIVE', true);
 define('WGA_PLUGIN_VERSION', $wga_compatibility->get_plugin_version());
 define('WGA_PLUGIN_DIR', dirname(__FILE__));
 define('WGA_PLUGIN_BASE', plugin_basename(__FILE__));
-define('WGA_PLUGIN_URL', plugins_url(null, __FILE__));
+define('WGA_PLUGIN_URL', plugins_url('', __FILE__));
 define('WGA_PLUGIN_CACHE_FOLDER', 'wga-cache');
 
 

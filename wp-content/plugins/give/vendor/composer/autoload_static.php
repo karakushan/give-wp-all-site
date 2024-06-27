@@ -4,28 +4,31 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit903ece1b0c7a9919d753dd447cdfaf50
+class ComposerStaticInit710d2ab2c1fe36ccdb02fe9d59fa4d93
 {
     public static $files = array (
-        '5255c38a0faeba867671b61dfda6d864' => __DIR__ . '/..' . '/paragonie/random_compat/lib/random.php',
+        '6e3fae29631ef280660b3cdad06f25a8' => __DIR__ . '/..' . '/symfony/deprecation-contracts/function.php',
         '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
-        '023d27dca8066ef29e6739335ea73bad' => __DIR__ . '/..' . '/symfony/polyfill-php70/bootstrap.php',
+        '320cde22f66dd4f5d3fd621d3e88b98f' => __DIR__ . '/..' . '/symfony/polyfill-ctype/bootstrap.php',
         '5f6326688f4debc6e43d6860fdea3df8' => __DIR__ . '/../..' . '/src/Framework/Http/Response/functions.php',
+        'd07363a44b39ed7758400be44c013440' => __DIR__ . '/../..' . '/src/FormMigration/functions.php',
     );
 
     public static $prefixLengthsPsr4 = array (
         'S' => 
         array (
-            'Symfony\\Polyfill\\Php70\\' => 23,
             'Symfony\\Polyfill\\Mbstring\\' => 26,
+            'Symfony\\Polyfill\\Ctype\\' => 23,
             'Symfony\\Component\\HttpFoundation\\' => 33,
             'Stripe\\' => 7,
             'StellarWP\\Validation\\' => 21,
+            'StellarWP\\FieldConditions\\' => 26,
             'StellarWP\\ContainerContract\\' => 28,
             'Sample\\' => 7,
         ),
         'P' => 
         array (
+            'Psr\\Container\\' => 14,
             'PayPalHttp\\' => 11,
             'PayPalCheckoutSdk\\' => 18,
         ),
@@ -50,13 +53,13 @@ class ComposerStaticInit903ece1b0c7a9919d753dd447cdfaf50
     );
 
     public static $prefixDirsPsr4 = array (
-        'Symfony\\Polyfill\\Php70\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/symfony/polyfill-php70',
-        ),
         'Symfony\\Polyfill\\Mbstring\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-mbstring',
+        ),
+        'Symfony\\Polyfill\\Ctype\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/polyfill-ctype',
         ),
         'Symfony\\Component\\HttpFoundation\\' => 
         array (
@@ -70,6 +73,10 @@ class ComposerStaticInit903ece1b0c7a9919d753dd447cdfaf50
         array (
             0 => __DIR__ . '/..' . '/stellarwp/validation/src',
         ),
+        'StellarWP\\FieldConditions\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/stellarwp/field-conditions/src',
+        ),
         'StellarWP\\ContainerContract\\' => 
         array (
             0 => __DIR__ . '/..' . '/stellarwp/container-contract/src',
@@ -77,6 +84,10 @@ class ComposerStaticInit903ece1b0c7a9919d753dd447cdfaf50
         'Sample\\' => 
         array (
             0 => __DIR__ . '/..' . '/paypal/paypal-checkout-sdk/samples',
+        ),
+        'Psr\\Container\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/container/src',
         ),
         'PayPalHttp\\' => 
         array (
@@ -113,16 +124,10 @@ class ComposerStaticInit903ece1b0c7a9919d753dd447cdfaf50
     );
 
     public static $classMap = array (
-        'ArithmeticError' => __DIR__ . '/..' . '/symfony/polyfill-php70/Resources/stubs/ArithmeticError.php',
-        'AssertionError' => __DIR__ . '/..' . '/symfony/polyfill-php70/Resources/stubs/AssertionError.php',
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
         'Datamatrix' => __DIR__ . '/..' . '/tecnickcom/tcpdf/include/barcodes/datamatrix.php',
-        'DivisionByZeroError' => __DIR__ . '/..' . '/symfony/polyfill-php70/Resources/stubs/DivisionByZeroError.php',
-        'Error' => __DIR__ . '/..' . '/symfony/polyfill-php70/Resources/stubs/Error.php',
         'PDF417' => __DIR__ . '/..' . '/tecnickcom/tcpdf/include/barcodes/pdf417.php',
-        'ParseError' => __DIR__ . '/..' . '/symfony/polyfill-php70/Resources/stubs/ParseError.php',
         'QRcode' => __DIR__ . '/..' . '/tecnickcom/tcpdf/include/barcodes/qrcode.php',
-        'SessionUpdateTimestampHandlerInterface' => __DIR__ . '/..' . '/symfony/polyfill-php70/Resources/stubs/SessionUpdateTimestampHandlerInterface.php',
         'TCPDF' => __DIR__ . '/..' . '/tecnickcom/tcpdf/tcpdf.php',
         'TCPDF2DBarcode' => __DIR__ . '/..' . '/tecnickcom/tcpdf/tcpdf_barcodes_2d.php',
         'TCPDFBarcode' => __DIR__ . '/..' . '/tecnickcom/tcpdf/tcpdf_barcodes_1d.php',
@@ -134,15 +139,14 @@ class ComposerStaticInit903ece1b0c7a9919d753dd447cdfaf50
         'TCPDF_IMPORT' => __DIR__ . '/..' . '/tecnickcom/tcpdf/tcpdf_import.php',
         'TCPDF_PARSER' => __DIR__ . '/..' . '/tecnickcom/tcpdf/tcpdf_parser.php',
         'TCPDF_STATIC' => __DIR__ . '/..' . '/tecnickcom/tcpdf/include/tcpdf_static.php',
-        'TypeError' => __DIR__ . '/..' . '/symfony/polyfill-php70/Resources/stubs/TypeError.php',
     );
 
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit903ece1b0c7a9919d753dd447cdfaf50::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit903ece1b0c7a9919d753dd447cdfaf50::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInit903ece1b0c7a9919d753dd447cdfaf50::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit710d2ab2c1fe36ccdb02fe9d59fa4d93::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit710d2ab2c1fe36ccdb02fe9d59fa4d93::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInit710d2ab2c1fe36ccdb02fe9d59fa4d93::$classMap;
 
         }, null, ClassLoader::class);
     }

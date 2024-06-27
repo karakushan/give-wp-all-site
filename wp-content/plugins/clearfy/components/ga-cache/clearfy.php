@@ -15,7 +15,7 @@ if( !defined('ABSPATH') ) {
 }
 
 if( !defined('WGA_PLUGIN_ACTIVE') ) {
-	define('WGA_PLUGIN_VERSION', '3.2.5');
+	define('WGA_PLUGIN_VERSION', '3.2.7');
 	define('WGA_TEXT_DOMAIN', 'simple-google-analytics');
 	define('WGA_PLUGIN_ACTIVE', true);
 
@@ -31,7 +31,7 @@ if( !defined('WGA_PLUGIN_ACTIVE') ) {
 	}
 
 	if( !defined('WGA_PLUGIN_URL') ) {
-		define('WGA_PLUGIN_URL', plugins_url(null, __FILE__));
+		define('WGA_PLUGIN_URL', plugins_url('', __FILE__));
 	}
 
 	if( !defined('WGA_PLUGIN_CACHE_FOLDER') ) {

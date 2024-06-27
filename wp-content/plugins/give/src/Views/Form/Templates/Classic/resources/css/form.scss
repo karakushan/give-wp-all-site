@@ -54,6 +54,7 @@ label.give-hidden {
 @import 'donation-summary';
 @import 'donate-now';
 @import 'errors-notices';
+@import 'modal';
 @import 'terms';
 
 // Receipt
@@ -65,3 +66,6 @@ label.give-hidden {
 @import 'tributes';
 @import 'ffm';
 @import 'stripe-checkout-modal';
+
+// Processing state template
+@import '../../../../../../../assets/src/css/frontend/processing-state-template.scss';

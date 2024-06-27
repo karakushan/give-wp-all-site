@@ -3,34 +3,21 @@
 namespace Give\PaymentGateways\PayPalCommerce;
 
 use Give\PaymentGateways\PayPalCommerce\Models\MerchantDetail;
+use Give\PaymentGateways\PayPalCommerce\Repositories\Traits\HasMode;
 use PayPalCheckoutSdk\Core\PayPalHttpClient;
 use PayPalCheckoutSdk\Core\ProductionEnvironment;
 use PayPalCheckoutSdk\Core\SandboxEnvironment;
 
 /**
  * Class PayPalClient
+ *
  * @package Give\PaymentGateways\PaypalCommerce
  *
  * @since 2.9.0
  */
 class PayPalClient
 {
-    /**
-     * Environment mode.
-     *
-     * @since 2.9.0
-     *
-     * @var string
-     */
-    public $mode = null;
-
-    /**
-     * PayPalClient constructor.
-     */
-    public function __construct()
-    {
-        $this->mode = give_is_test_mode() ? 'sandbox' : 'live';
-    }
+    use HasMode;
 
     /**
      * Get environment.
@@ -52,18 +39,18 @@ class PayPalClient
     /**
      * Get http client.
      *
+     * @since 2.25.0 Add custom AuthorizationInjector.
      * @since 2.9.0
-     *
-     * @return PayPalHttpClient
      */
-    public function getHttpClient()
+    public function getHttpClient(): PayPalHttpClient
     {
-        return new PayPalHttpClient($this->getEnvironment());
+        return new PayPalCheckoutSdk\PayPalHttpClient($this->getEnvironment());
     }
 
     /**
      * Get api url.
      *
+     * @deprecated 2.30.1
      * @since 2.9.0
      *
      * @param string $endpoint

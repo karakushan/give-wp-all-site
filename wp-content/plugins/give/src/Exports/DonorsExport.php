@@ -27,6 +27,11 @@ class DonorsExport extends Give_Batch_Export
     protected $searchBy;
 
     /**
+     * @var int
+     */
+    protected $donationFormId;
+
+    /**
      * @inheritdoc
      */
     public function set_properties($request)
@@ -44,34 +49,15 @@ class DonorsExport extends Give_Batch_Export
         if ($this->postedData['searchBy']) {
             $this->searchBy = $this->postedData['searchBy'];
         }
+
+        $this->donationFormId = (int)$this->postedData['forms'];
     }
 
     /**
-     * @since 2.21.2
-     */
-    public function csv_cols(): array
-    {
-        return $this->flattenAddressColumn(
-            array_intersect_key([
-                'full_name' => __('Name', 'give'),
-                'email' => __('Email', 'give'),
-                'address' => [
-                    'address_line1' => __('Address', 'give'),
-                    'address_line2' => __('Address 2', 'give'),
-                    'address_city' => __('City', 'give'),
-                    'address_state' => __('State', 'give'),
-                    'address_zip' => __('Zip', 'give'),
-                    'address_country' => __('Country', 'give'),
-                ],
-                'userid' => __('User ID', 'give'),
-                'donations' => __('Number of donations', 'give'),
-                'donation_sum' => __('Total Donated', 'give'),
-            ], $this->postedData['give_export_columns'])
-        );
-    }
-
-    /**
-     * @since 2.21.2
+     * @since 3.12.1 Include donor phone.
+     * @since      2.29.0 Include donor created date
+     * @since      2.21.2
+     * @since 3.3.0 Filter donors by form ID
      */
     public function get_data(): array
     {
@@ -81,6 +67,8 @@ class DonorsExport extends Give_Batch_Export
                 ['donors.name', 'full_name'],
                 ['donors.email', 'email'],
                 ['donors.user_id', 'userid'],
+                ['donors.date_created', 'donor_created_date'],
+                ['donors.phone', 'donor_phone_number'],
                 ['donors.purchase_count', 'donations'],
                 ['donors.purchase_value', 'donation_sum']
             );
@@ -113,17 +101,29 @@ class DonorsExport extends Give_Batch_Export
             }
         }
 
+        if ($this->donationFormId) {
+            $donationQuery
+                ->join(function (JoinQueryBuilder $builder) {
+                    $builder
+                        ->leftJoin('give_donationmeta', 'form')
+                        ->on('donations.ID', 'form.donation_id')
+                        ->andOn('form.meta_key', '_give_payment_form_id', true);
+                })
+                ->where('form.meta_value', $this->donationFormId);
+        }
+
         $donorQuery->joinRaw("JOIN ({$donationQuery->getSQL()}) AS sub ON donors.id = sub.donorId");
 
         if ($this->shouldIncludeAddress()) {
-            $donorQuery->attachMeta('give_donormeta',
+            $donorQuery->attachMeta(
+                'give_donormeta',
                 'donors.ID',
                 'donor_id',
                 ['_give_donor_address_billing_line1_0', 'address_line1'],
                 ['_give_donor_address_billing_line2_0', 'address_line2'],
-                ['_give_donor_address_billing_city_0',  'address_city'],
+                ['_give_donor_address_billing_city_0', 'address_city'],
                 ['_give_donor_address_billing_state_0', 'address_state'],
-                ['_give_donor_address_billing_zip_0',   'address_zip'],
+                ['_give_donor_address_billing_zip_0', 'address_zip'],
                 ['_give_donor_address_billing_country_0', 'address_country']
             );
         }
@@ -146,6 +146,47 @@ class DonorsExport extends Give_Batch_Export
     /**
      * @since 2.21.2
      */
+    protected function filterExportData(array $exportData): array
+    {
+        /**
+         * @since 2.21.2
+         *
+         * @param array $exportData
+         */
+        return apply_filters("give_export_get_data_{$this->export_type}", $exportData);
+    }
+
+    /**
+     * @since 3.12.1 Include donor_phone_number col.
+     * @since      2.29.0 Include donor created col
+     * @since      2.21.2
+     */
+    public function csv_cols(): array
+    {
+        return $this->flattenAddressColumn(
+            array_intersect_key([
+                'full_name' => __('Name', 'give'),
+                'email' => __('Email', 'give'),
+                'address' => [
+                    'address_line1' => __('Address', 'give'),
+                    'address_line2' => __('Address 2', 'give'),
+                    'address_city' => __('City', 'give'),
+                    'address_state' => __('State', 'give'),
+                    'address_zip' => __('Zip', 'give'),
+                    'address_country' => __('Country', 'give'),
+                ],
+                'userid' => __('User ID', 'give'),
+                'donor_created_date' => __('Donor Created', 'give'),
+                'donor_phone_number' => __('Donor Phone Number', 'give'),
+                'donations' => __('Number of donations', 'give'),
+                'donation_sum' => __('Total Donated', 'give'),
+            ], $this->postedData['give_export_columns'])
+        );
+    }
+
+    /**
+     * @since 2.21.2
+     */
     protected function flattenAddressColumn(array $columnarData): array
     {
         return $this->flattenColumn($columnarData, 'address');
@@ -162,18 +203,5 @@ class DonorsExport extends Give_Batch_Export
         }
 
         return $columnarData;
-    }
-
-    /**
-     * @since 2.21.2
-     */
-    protected function filterExportData(array $exportData): array
-    {
-        /**
-         * @since 2.21.2
-         *
-         * @param array $exportData
-         */
-        return apply_filters("give_export_get_data_{$this->export_type}", $exportData);
     }
 }

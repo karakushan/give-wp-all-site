@@ -3,8 +3,6 @@
 namespace Give\PaymentGateways\PayPalCommerce\PayPalCheckoutSdk;
 
 use Give\PaymentGateways\PayPalCommerce\Models\MerchantDetail;
-use PayPalCheckoutSdk\Core\FPTIInstrumentationInjector;
-use PayPalCheckoutSdk\Core\GzipInjector;
 use PayPalCheckoutSdk\Core\PayPalEnvironment;
 
 /**
@@ -15,6 +13,7 @@ use PayPalCheckoutSdk\Core\PayPalEnvironment;
  * We register AuthorizationInjector class to inject access token in http request header.
  * AuthorizationInjector clas refresh access token only if expired.
  *
+ * @since 2.32.0 Remove unnecessary properties.
  * @since 2.25.0
  */
 class PayPalHttpClient extends \PayPalCheckoutSdk\Core\PayPalHttpClient
@@ -24,13 +23,20 @@ class PayPalHttpClient extends \PayPalCheckoutSdk\Core\PayPalHttpClient
      *
      * @since 2.25.0
      */
-    public function __construct(PayPalEnvironment $environment, $refreshToken = null)
+    public function __construct(PayPalEnvironment $environment)
     {
         parent::__construct($environment);
-        $this->authInjector = $this->getAuthorizationInjector($environment, $refreshToken);
+
+        // Remove existing AuthorizationInjector.
+        foreach ($this->injectors as $index => $injector) {
+            if ($injector instanceof \PayPalCheckoutSdk\Core\AuthorizationInjector) {
+                unset($this->injectors[$index]);
+            }
+        }
+
+        // Add custom AuthorizationInjector.
+        $this->authInjector = $this->getAuthorizationInjector($environment);
         $this->addInjector($this->authInjector);
-        $this->addInjector(new GzipInjector());
-        $this->addInjector(new FPTIInstrumentationInjector());
     }
 
     /**
@@ -38,14 +44,14 @@ class PayPalHttpClient extends \PayPalCheckoutSdk\Core\PayPalHttpClient
      *
      * @since 2.25.0
      */
-    private function getAuthorizationInjector($environment, $refreshToken): AuthorizationInjector
+    private function getAuthorizationInjector($environment): AuthorizationInjector
     {
         $merchant = give(MerchantDetail::class);
-        $authorizationInjector = new AuthorizationInjector($this, $environment, $refreshToken);
+        $authorizationInjector = new AuthorizationInjector();
 
         // Set access token if exists.
         if ($merchant->accessToken) {
-            $authorizationInjector->accessToken = $merchant->toArray()['token'];
+            $authorizationInjector->accessToken = AccessToken::fromArray($merchant->toArray()['token']);
         }
 
         return $authorizationInjector;
