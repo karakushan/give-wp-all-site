@@ -35,21 +35,29 @@ class WFP_Init
 
 		add_action('give_donation_form_top', [$this, 'give_donation_form_top'], 10, 1);
 
-		add_action('give_fields_after_donation_levels', function ($collection) {
-			$collection->append(
-			// Select field with options.
-				give_field('radio', 'wfp_reqquring_donation_on')
-					->options(
-						['basic', __('One-time payment', 'give-wayforpay')],
-						['reqquring', __('Monthly payment', 'give-wayforpay')],
-
-					)
-					->defaultValue('basic')
-					->label(__('Payment type', 'give-wayforpay'))
-			);
-		});
+		add_action('give_fields_after_donation_levels', [$this, 'give_wfp_fields_after_donation_levels_callback']);
 
 	}
+
+	/**
+	 * @param $collection
+	 * @return void
+	 */
+	function give_wfp_fields_after_donation_levels_callback($collection)
+	{
+		$collection->append(
+			give_field('radio', 'wfp_reqquring_donation_on')
+				->options(
+					['basic', __('One-time payment', 'give-wayforpay')],
+					['reqquring', __('Monthly payment', 'give-wayforpay')],
+
+				)
+				->defaultValue('basic')
+				->label(__('Payment type', 'give-wayforpay'))
+		);
+	}
+
+
 
 
 	function give_donation_form_top()
@@ -169,7 +177,7 @@ class WFP_Init
 			$response = $handler->parseRequestFromPostRaw();
 
 			$order_id = $response->getTransaction()->getOrderReference();
-			$donation = $wpdb->get_row("SELECT * FROM wp_give_donationmeta WHERE meta_key='trx_hash' AND meta_value='$order_id'");
+			$donation = $wpdb->get_row("SELECT * FROM {$wpdb->prefix}give_donationmeta WHERE meta_key='trx_hash' AND meta_value='$order_id'");
 			$donation_id = $donation->donation_id;
 
 			$donation = new Payment($donation_id);
@@ -259,7 +267,7 @@ var form = document.getElementById("wfp-form");
 	public function wfp_for_give_register_plugin_includes_admin()
 	{
 
-		wp_register_script('wfp_for_give', plugins_url('../assets/js/script.js', __FILE__), ['jquery'], false, true);
+		wp_register_script('wfp_for_give', plugins_url('../assets/js/give-wayforpay.js', __FILE__), ['jquery'],time() , true);
 		wp_enqueue_script('wfp_for_give');
 
 		wp_enqueue_script('wayforpay', 'https://secure.wayforpay.com/server/pay-widget.js');

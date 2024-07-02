@@ -74,7 +74,7 @@ class WFP_Gateway extends PaymentGateway
 				throw new PaymentGatewayException(__('payment_hash is required.', 'give-wayforpay'));
 			}
 			global $wpdb;
-			$wpdb->insert('wp_give_donationmeta', [
+			$wpdb->insert($wpdb->prefix.'give_donationmeta', [
 				'donation_id' => $donation->id,
 				'meta_key' => 'trx_hash',
 				'meta_value' => $_POST['payment_hash']
