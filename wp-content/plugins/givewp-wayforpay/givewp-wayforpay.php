@@ -7,7 +7,7 @@
  * Author URI:      https://github.com/karakushan
  * Text Domain:     give-wayforpay
  * Domain Path:     /languages
- * Version:         0.1.0
+ * Version:         0.2.0
  *
  * @package         Givewp_Liqpay_Gateway
  */

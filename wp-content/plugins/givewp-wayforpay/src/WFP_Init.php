@@ -3,10 +3,12 @@
 namespace GiveWFPGateway;
 
 use Give\Donations\Models\Donation;
+use Give\Framework\FieldsAPI\DonationForm;
 use WayForPay\SDK\Collection\ProductCollection;
 use WayForPay\SDK\Credential\AccountSecretCredential;
 use WayForPay\SDK\Domain\Client;
 use WayForPay\SDK\Domain\Product;
+use WayForPay\SDK\Domain\Regular;
 use WayForPay\SDK\Wizard\PurchaseWizard;
 use WayForPay\SDK\Exception\WayForPaySDKException;
 use WayForPay\SDK\Handler\ServiceUrlHandler;
@@ -31,16 +33,34 @@ class WFP_Init
 
 		add_action('give_payment_mode_after_gateways', [$this, 'wfp_for_give_add_payment_mode_after_gateways']);
 
-		add_action( 'give_donation_form_top',[$this,'give_donation_form_top'], 10, 1 );
+		add_action('give_donation_form_top', [$this, 'give_donation_form_top'], 10, 1);
+
+		add_action('give_fields_after_donation_levels', function ($collection) {
+			$collection->append(
+			// Select field with options.
+				give_field('radio', 'wfp_reqquring_donation_on')
+					->options(
+						['basic', __('One-time payment', 'give-wayforpay')],
+						['reqquring', __('Monthly payment', 'give-wayforpay')],
+
+					)
+					->defaultValue('basic')
+					->label(__('Payment type', 'give-wayforpay'))
+			);
+		});
+
 	}
 
-	function give_donation_form_top(){
-		 ?>
+
+	function give_donation_form_top()
+	{
+		?>
 		<input type='hidden' name='payment_hash' value='<?php echo esc_attr(uniqid()) ?>'>
 		<?php
 	}
 
-	function wfp_for_give_add_payment_mode_after_gateways(){
+	function wfp_for_give_add_payment_mode_after_gateways()
+	{
 
 		?>
 		<style>
@@ -119,6 +139,14 @@ class WFP_Init
 					'type' => 'textarea',
 				);
 
+
+				$settings[] = array(
+					'name' => __('Reccuring donations', 'give-wayforpay'),
+					'desc' => '',
+					'id' => 'wfp_api_recurring_on',
+					'type' => 'checkbox',
+				);
+
 				$settings[] = array(
 					'id' => 'wfp_give_title',
 					'type' => 'sectionend',
@@ -166,15 +194,16 @@ class WFP_Init
 		if (isset($_GET['type']) && $_GET['type'] === 'wfp' && !empty($_GET['hash'])) {
 			global $wpdb;
 			$order_id = $_GET['hash'];
-			$donation = $wpdb->get_row("SELECT * FROM wp_give_donationmeta WHERE meta_key='trx_hash' AND meta_value='$order_id'");
+			$donation = $wpdb->get_row("SELECT * FROM {$wpdb->prefix}give_donationmeta WHERE meta_key='trx_hash' AND meta_value='$order_id'");
 			$donation_id = $donation->donation_id;
 			$donation = Donation::find($donation_id);
-
 			$credential = new AccountSecretCredential(give_get_option('wfp_api_account'), give_get_option('wfp_api_secret'));
+			$amount = floatval($donation->amount->getAmount() / 100);
+			$recurring_enabled = isset($_GET['type']) && $_GET['reqquring'] == 'reqquring';
 
 			$form = PurchaseWizard::get($credential)
 				->setOrderReference($order_id)
-				->setAmount($donation->amount->getAmount() / 100)
+				->setAmount($amount)
 				->setCurrency('UAH')
 				->setOrderDate(new \DateTime())
 				->setMerchantDomainName($_SERVER['HTTP_HOST'])
@@ -189,8 +218,19 @@ class WFP_Init
 					new Product($donation->formTitle, $donation->amount->getAmount() / 100, 1)
 				)))
 				->setReturnUrl(urlencode(give_get_success_page_url()))
-				->setServiceUrl(site_url('/wp-json/wfp/callback'))
-				->getForm()
+				->setServiceUrl(site_url('/wp-json/wfp/callback'));
+			if ($recurring_enabled) {
+				$form->setRegular(new Regular(
+					[Regular::MODE_MONTHLY],
+					$amount,
+					null,
+					null,
+					null,
+					Regular::BEHAVIOR_PRESET
+				));
+			}
+
+			$form = $form->getForm()
 				->getAsString();
 
 			printf('<div id="wfp-form">%s</div>
@@ -222,7 +262,7 @@ var form = document.getElementById("wfp-form");
 		wp_register_script('wfp_for_give', plugins_url('../assets/js/script.js', __FILE__), ['jquery'], false, true);
 		wp_enqueue_script('wfp_for_give');
 
-		wp_enqueue_script('wayforpay','https://secure.wayforpay.com/server/pay-widget.js');
+		wp_enqueue_script('wayforpay', 'https://secure.wayforpay.com/server/pay-widget.js');
 
 		// add ajax url
 		wp_localize_script('wfp_for_give', 'givewayforpay', array(
